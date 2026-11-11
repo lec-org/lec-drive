@@ -211,7 +211,7 @@ func CheckTeamPurge(ctx context.Context, db *ent.Client, files []*ent.File) erro
 			continue
 		}
 		// 尚未完成上传的占位文件可以取消，不影响已上传的图片。
-		if item.Type == int(types.FileTypeFile) {
+		if item.Type == int(types.FileTypeFile) && item.PrimaryEntity == 0 {
 			complete, err := db.Entity.Query().Where(entity.HasFileWith(file.ID(item.ID)), entity.UploadSessionIDIsNil()).Exist(ctx)
 			if err != nil {
 				return err

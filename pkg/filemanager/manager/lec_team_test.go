@@ -93,6 +93,10 @@ func Test团队成员权限与三十天直链保留(t *testing.T) {
 	require.Error(t, adminFS.Delete(ctx, []*fs.URI{path}, fs.WithSkipSoftDelete(true)))
 	require.Error(t, adminFS.RecycleEntities(ctx, true, entity.ID))
 	require.Error(t, inventory.CheckTeamPurge(ctx, db, []*ent.File{image}), "后台管理也不能直接彻底删除活跃图片")
+	// 引用异常的已发布图片也不能被当成未完成上传直接清理。
+	require.NoError(t, db.File.UpdateOneID(image.ID).ClearEntities().Exec(ctx))
+	require.Error(t, inventory.CheckTeamPurge(ctx, db, []*ent.File{image}))
+	require.NoError(t, db.File.UpdateOneID(image.ID).AddEntities(entity).Exec(ctx))
 	require.NoError(t, adminFS.Delete(ctx, []*fs.URI{path}))
 	deleted, err := db.File.Get(ctx, image.ID)
 	require.NoError(t, err)
