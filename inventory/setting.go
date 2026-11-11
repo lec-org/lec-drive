@@ -485,10 +485,10 @@ var mailTemplateContents = []MailTemplateContent{
 
 var DefaultSettings = map[string]string{
 	"siteURL":                                    `http://localhost:5212`,
-	"siteName":                                   `Cloudreve`,
-	"siteDes":                                    "Cloudreve",
+	"siteName":                                   `LecDrive`,
+	"siteDes":                                    "LEC 图片与素材管理空间",
 	"siteID":                                     uuid.Must(uuid.NewV4()).String(),
-	"siteTitle":                                  "Cloud storage for everyone",
+	"siteTitle":                                  "个人图片与素材管理",
 	"siteScript":                                 "",
 	"pwa_small_icon":                             "/static/img/favicon.ico",
 	"pwa_medium_icon":                            "/static/img/logo192.png",

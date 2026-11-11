@@ -37,4 +37,5 @@ data/
 tmp/
 .devcontainer/
 cloudreve
+lec-drive
 .DS_Store
