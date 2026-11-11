@@ -323,8 +323,8 @@ func (handler *Driver) Source(ctx context.Context, e fs.Entity, args *driver.Get
 		return "", err
 	}
 
-	// 公有空间替换掉Key及不支持的头
-	if !handler.policy.IsPrivate {
+	// 强制下载需保留签名和 Content-Disposition 参数，普通公开图片仍使用裸地址。
+	if !handler.policy.IsPrivate && !args.IsDownload {
 		finalURL.RawQuery = ""
 	}
 
