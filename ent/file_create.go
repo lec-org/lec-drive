@@ -29,6 +29,20 @@ type FileCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (fc *FileCreate) SetLecDeletedAt(t time.Time) *FileCreate {
+	fc.mutation.SetLecDeletedAt(t)
+	return fc
+}
+
+// SetNillableLecDeletedAt sets the "lec_deleted_at" field if the given value is not nil.
+func (fc *FileCreate) SetNillableLecDeletedAt(t *time.Time) *FileCreate {
+	if t != nil {
+		fc.SetLecDeletedAt(*t)
+	}
+	return fc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (fc *FileCreate) SetCreatedAt(t time.Time) *FileCreate {
 	fc.mutation.SetCreatedAt(t)
@@ -391,6 +405,10 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 	}
 
 	_spec.OnConflict = fc.conflict
+	if value, ok := fc.mutation.LecDeletedAt(); ok {
+		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)
+		_node.LecDeletedAt = &value
+	}
 	if value, ok := fc.mutation.CreatedAt(); ok {
 		_spec.SetField(file.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -561,7 +579,7 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.File.Create().
-//		SetCreatedAt(v).
+//		SetLecDeletedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -570,7 +588,7 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.FileUpsert) {
-//			SetCreatedAt(v+v).
+//			SetLecDeletedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (fc *FileCreate) OnConflict(opts ...sql.ConflictOption) *FileUpsertOne {
@@ -605,6 +623,24 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (u *FileUpsert) SetLecDeletedAt(v time.Time) *FileUpsert {
+	u.Set(file.FieldLecDeletedAt, v)
+	return u
+}
+
+// UpdateLecDeletedAt sets the "lec_deleted_at" field to the value that was provided on create.
+func (u *FileUpsert) UpdateLecDeletedAt() *FileUpsert {
+	u.SetExcluded(file.FieldLecDeletedAt)
+	return u
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (u *FileUpsert) ClearLecDeletedAt() *FileUpsert {
+	u.SetNull(file.FieldLecDeletedAt)
+	return u
+}
 
 // SetUpdatedAt sets the "updated_at" field.
 func (u *FileUpsert) SetUpdatedAt(v time.Time) *FileUpsert {
@@ -811,6 +847,27 @@ func (u *FileUpsertOne) Update(set func(*FileUpsert)) *FileUpsertOne {
 		set(&FileUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (u *FileUpsertOne) SetLecDeletedAt(v time.Time) *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.SetLecDeletedAt(v)
+	})
+}
+
+// UpdateLecDeletedAt sets the "lec_deleted_at" field to the value that was provided on create.
+func (u *FileUpsertOne) UpdateLecDeletedAt() *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.UpdateLecDeletedAt()
+	})
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (u *FileUpsertOne) ClearLecDeletedAt() *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.ClearLecDeletedAt()
+	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1142,7 +1199,7 @@ func (fcb *FileCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.FileUpsert) {
-//			SetCreatedAt(v+v).
+//			SetLecDeletedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (fcb *FileCreateBulk) OnConflict(opts ...sql.ConflictOption) *FileUpsertBulk {
@@ -1216,6 +1273,27 @@ func (u *FileUpsertBulk) Update(set func(*FileUpsert)) *FileUpsertBulk {
 		set(&FileUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (u *FileUpsertBulk) SetLecDeletedAt(v time.Time) *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.SetLecDeletedAt(v)
+	})
+}
+
+// UpdateLecDeletedAt sets the "lec_deleted_at" field to the value that was provided on create.
+func (u *FileUpsertBulk) UpdateLecDeletedAt() *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.UpdateLecDeletedAt()
+	})
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (u *FileUpsertBulk) ClearLecDeletedAt() *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.ClearLecDeletedAt()
+	})
 }
 
 // SetUpdatedAt sets the "updated_at" field.

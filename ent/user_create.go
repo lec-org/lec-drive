@@ -102,6 +102,20 @@ func (uc *UserCreate) SetNillableLecSSOSubject(s *string) *UserCreate {
 	return uc
 }
 
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (uc *UserCreate) SetLecTeamOwnerID(i int) *UserCreate {
+	uc.mutation.SetLecTeamOwnerID(i)
+	return uc
+}
+
+// SetNillableLecTeamOwnerID sets the "lec_team_owner_id" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLecTeamOwnerID(i *int) *UserCreate {
+	if i != nil {
+		uc.SetLecTeamOwnerID(*i)
+	}
+	return uc
+}
+
 // SetEmail sets the "email" field.
 func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	uc.mutation.SetEmail(s)
@@ -194,6 +208,26 @@ func (uc *UserCreate) SetSettings(ts *types.UserSetting) *UserCreate {
 func (uc *UserCreate) SetGroupUsers(i int) *UserCreate {
 	uc.mutation.SetGroupUsers(i)
 	return uc
+}
+
+// SetLecTeamOwner sets the "lec_team_owner" edge to the User entity.
+func (uc *UserCreate) SetLecTeamOwner(u *User) *UserCreate {
+	return uc.SetLecTeamOwnerID(u.ID)
+}
+
+// AddLecTeamMemberIDs adds the "lec_team_members" edge to the User entity by IDs.
+func (uc *UserCreate) AddLecTeamMemberIDs(ids ...int) *UserCreate {
+	uc.mutation.AddLecTeamMemberIDs(ids...)
+	return uc
+}
+
+// AddLecTeamMembers adds the "lec_team_members" edges to the User entity.
+func (uc *UserCreate) AddLecTeamMembers(u ...*User) *UserCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddLecTeamMemberIDs(ids...)
 }
 
 // SetGroupID sets the "group" edge to the Group entity by ID.
@@ -520,6 +554,39 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldSettings, field.TypeJSON, value)
 		_node.Settings = value
 	}
+	if nodes := uc.mutation.LecTeamOwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.LecTeamOwnerTable,
+			Columns: []string{user.LecTeamOwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LecTeamOwnerID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.LecTeamMembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := uc.mutation.GroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -783,6 +850,24 @@ func (u *UserUpsert) ClearLecSSOSubject() *UserUpsert {
 	return u
 }
 
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (u *UserUpsert) SetLecTeamOwnerID(v int) *UserUpsert {
+	u.Set(user.FieldLecTeamOwnerID, v)
+	return u
+}
+
+// UpdateLecTeamOwnerID sets the "lec_team_owner_id" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLecTeamOwnerID() *UserUpsert {
+	u.SetExcluded(user.FieldLecTeamOwnerID)
+	return u
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (u *UserUpsert) ClearLecTeamOwnerID() *UserUpsert {
+	u.SetNull(user.FieldLecTeamOwnerID)
+	return u
+}
+
 // SetEmail sets the "email" field.
 func (u *UserUpsert) SetEmail(v string) *UserUpsert {
 	u.Set(user.FieldEmail, v)
@@ -1040,6 +1125,27 @@ func (u *UserUpsertOne) UpdateLecSSOSubject() *UserUpsertOne {
 func (u *UserUpsertOne) ClearLecSSOSubject() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearLecSSOSubject()
+	})
+}
+
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (u *UserUpsertOne) SetLecTeamOwnerID(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecTeamOwnerID(v)
+	})
+}
+
+// UpdateLecTeamOwnerID sets the "lec_team_owner_id" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLecTeamOwnerID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecTeamOwnerID()
+	})
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (u *UserUpsertOne) ClearLecTeamOwnerID() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecTeamOwnerID()
 	})
 }
 
@@ -1494,6 +1600,27 @@ func (u *UserUpsertBulk) UpdateLecSSOSubject() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearLecSSOSubject() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearLecSSOSubject()
+	})
+}
+
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (u *UserUpsertBulk) SetLecTeamOwnerID(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecTeamOwnerID(v)
+	})
+}
+
+// UpdateLecTeamOwnerID sets the "lec_team_owner_id" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLecTeamOwnerID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecTeamOwnerID()
+	})
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (u *UserUpsertBulk) ClearLecTeamOwnerID() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecTeamOwnerID()
 	})
 }
 

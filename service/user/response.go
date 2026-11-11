@@ -8,6 +8,7 @@ import (
 	"github.com/cloudreve/Cloudreve/v4/application/dependency"
 	"github.com/cloudreve/Cloudreve/v4/ent"
 	"github.com/cloudreve/Cloudreve/v4/ent/user"
+	"github.com/cloudreve/Cloudreve/v4/inventory"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
 	"github.com/cloudreve/Cloudreve/v4/pkg/auth"
 	"github.com/cloudreve/Cloudreve/v4/pkg/boolset"
@@ -105,6 +106,7 @@ type BuiltinLoginResponse struct {
 
 // User 用户序列化器
 type User struct {
+	TeamSpace           bool                           `json:"team_space,omitempty"`
 	ID                  string                         `json:"id"`
 	Email               string                         `json:"email,omitempty"`
 	Nickname            string                         `json:"nickname"`
@@ -161,12 +163,17 @@ func BuildWebAuthnList(credentials []webauthn.Credential) []WebAuthnCredentials 
 
 // BuildUser 序列化用户
 func BuildUser(user *ent.User, idEncoder hashid.Encoder) User {
+	group := BuildGroup(user.Edges.Group, idEncoder)
+	if inventory.IsLecTeamMember(user) && group != nil {
+		group.TrashRetention = int(inventory.LecTeamRetention / time.Second)
+	}
 	email := user.Email
 	// 外部身份账号使用内部唯一标识占位，不把占位地址展示成用户真实邮箱。
 	if user.LecSSOSubject != nil {
 		email = ""
 	}
 	return User{
+		TeamSpace:           inventory.IsLecTeamMember(user),
 		ID:                  hashid.EncodeUserID(idEncoder, user.ID),
 		Email:               email,
 		Nickname:            user.Nick,
@@ -175,7 +182,7 @@ func BuildUser(user *ent.User, idEncoder hashid.Encoder) User {
 		CreatedAt:           user.CreatedAt,
 		PreferredTheme:      user.Settings.PreferredTheme,
 		Anonymous:           user.ID == 0,
-		Group:               BuildGroup(user.Edges.Group, idEncoder),
+		Group:               group,
 		Pined:               user.Settings.Pined,
 		Language:            user.Settings.Language,
 		DisableViewSync:     user.Settings.DisableViewSync,

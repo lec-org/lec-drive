@@ -137,6 +137,7 @@ type (
 )
 
 type manager struct {
+	actor        *ent.User
 	user         *ent.User
 	l            logging.Logger
 	fs           fs.FileSystem
@@ -156,7 +157,10 @@ func NewFileManager(dep dependency.Dep, u *ent.User) FileManager {
 	if config.System().Mode == conf.SlaveMode || u == nil {
 		return newStatelessFileManager(dep)
 	}
+	actor := u
+	u = inventory.StorageUser(u)
 	return &manager{
+		actor:    actor,
 		l:        dep.Logger(),
 		user:     u,
 		settings: dep.SettingProvider(),

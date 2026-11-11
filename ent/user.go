@@ -30,6 +30,8 @@ type User struct {
 	LecSSOIssuer *string `json:"lec_sso_issuer,omitempty"`
 	// LecSSOSubject holds the value of the "lec_sso_subject" field.
 	LecSSOSubject *string `json:"lec_sso_subject,omitempty"`
+	// LecTeamOwnerID holds the value of the "lec_team_owner_id" field.
+	LecTeamOwnerID *int `json:"lec_team_owner_id,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// Nick holds the value of the "nick" field.
@@ -56,6 +58,10 @@ type User struct {
 
 // UserEdges holds the relations/edges for other nodes in the graph.
 type UserEdges struct {
+	// LecTeamOwner holds the value of the lec_team_owner edge.
+	LecTeamOwner *User `json:"lec_team_owner,omitempty"`
+	// LecTeamMembers holds the value of the lec_team_members edge.
+	LecTeamMembers []*User `json:"lec_team_members,omitempty"`
 	// Group holds the value of the group edge.
 	Group *Group `json:"group,omitempty"`
 	// Files holds the value of the files edge.
@@ -76,13 +82,35 @@ type UserEdges struct {
 	OauthGrants []*OAuthGrant `json:"oauth_grants,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [11]bool
+}
+
+// LecTeamOwnerOrErr returns the LecTeamOwner value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) LecTeamOwnerOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.LecTeamOwner == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.LecTeamOwner, nil
+	}
+	return nil, &NotLoadedError{edge: "lec_team_owner"}
+}
+
+// LecTeamMembersOrErr returns the LecTeamMembers value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) LecTeamMembersOrErr() ([]*User, error) {
+	if e.loadedTypes[1] {
+		return e.LecTeamMembers, nil
+	}
+	return nil, &NotLoadedError{edge: "lec_team_members"}
 }
 
 // GroupOrErr returns the Group value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserEdges) GroupOrErr() (*Group, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[2] {
 		if e.Group == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: group.Label}
@@ -95,7 +123,7 @@ func (e UserEdges) GroupOrErr() (*Group, error) {
 // FilesOrErr returns the Files value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) FilesOrErr() ([]*File, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		return e.Files, nil
 	}
 	return nil, &NotLoadedError{edge: "files"}
@@ -104,7 +132,7 @@ func (e UserEdges) FilesOrErr() ([]*File, error) {
 // DavAccountsOrErr returns the DavAccounts value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) DavAccountsOrErr() ([]*DavAccount, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		return e.DavAccounts, nil
 	}
 	return nil, &NotLoadedError{edge: "dav_accounts"}
@@ -113,7 +141,7 @@ func (e UserEdges) DavAccountsOrErr() ([]*DavAccount, error) {
 // SharesOrErr returns the Shares value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) SharesOrErr() ([]*Share, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[5] {
 		return e.Shares, nil
 	}
 	return nil, &NotLoadedError{edge: "shares"}
@@ -122,7 +150,7 @@ func (e UserEdges) SharesOrErr() ([]*Share, error) {
 // PasskeyOrErr returns the Passkey value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) PasskeyOrErr() ([]*Passkey, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[6] {
 		return e.Passkey, nil
 	}
 	return nil, &NotLoadedError{edge: "passkey"}
@@ -131,7 +159,7 @@ func (e UserEdges) PasskeyOrErr() ([]*Passkey, error) {
 // TasksOrErr returns the Tasks value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) TasksOrErr() ([]*Task, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[7] {
 		return e.Tasks, nil
 	}
 	return nil, &NotLoadedError{edge: "tasks"}
@@ -140,7 +168,7 @@ func (e UserEdges) TasksOrErr() ([]*Task, error) {
 // FseventsOrErr returns the Fsevents value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) FseventsOrErr() ([]*FsEvent, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[8] {
 		return e.Fsevents, nil
 	}
 	return nil, &NotLoadedError{edge: "fsevents"}
@@ -149,7 +177,7 @@ func (e UserEdges) FseventsOrErr() ([]*FsEvent, error) {
 // EntitiesOrErr returns the Entities value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) EntitiesOrErr() ([]*Entity, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[9] {
 		return e.Entities, nil
 	}
 	return nil, &NotLoadedError{edge: "entities"}
@@ -158,7 +186,7 @@ func (e UserEdges) EntitiesOrErr() ([]*Entity, error) {
 // OauthGrantsOrErr returns the OauthGrants value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) OauthGrantsOrErr() ([]*OAuthGrant, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[10] {
 		return e.OauthGrants, nil
 	}
 	return nil, &NotLoadedError{edge: "oauth_grants"}
@@ -171,7 +199,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldSettings:
 			values[i] = new([]byte)
-		case user.FieldID, user.FieldStorage, user.FieldGroupUsers:
+		case user.FieldID, user.FieldLecTeamOwnerID, user.FieldStorage, user.FieldGroupUsers:
 			values[i] = new(sql.NullInt64)
 		case user.FieldLecSSOIssuer, user.FieldLecSSOSubject, user.FieldEmail, user.FieldNick, user.FieldPassword, user.FieldStatus, user.FieldTwoFactorSecret, user.FieldAvatar:
 			values[i] = new(sql.NullString)
@@ -230,6 +258,13 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.LecSSOSubject = new(string)
 				*u.LecSSOSubject = value.String
+			}
+		case user.FieldLecTeamOwnerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field lec_team_owner_id", values[i])
+			} else if value.Valid {
+				u.LecTeamOwnerID = new(int)
+				*u.LecTeamOwnerID = int(value.Int64)
 			}
 		case user.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -298,6 +333,16 @@ func (u *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
+}
+
+// QueryLecTeamOwner queries the "lec_team_owner" edge of the User entity.
+func (u *User) QueryLecTeamOwner() *UserQuery {
+	return NewUserClient(u.config).QueryLecTeamOwner(u)
+}
+
+// QueryLecTeamMembers queries the "lec_team_members" edge of the User entity.
+func (u *User) QueryLecTeamMembers() *UserQuery {
+	return NewUserClient(u.config).QueryLecTeamMembers(u)
 }
 
 // QueryGroup queries the "group" edge of the User entity.
@@ -389,6 +434,11 @@ func (u *User) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
+	if v := u.LecTeamOwnerID; v != nil {
+		builder.WriteString("lec_team_owner_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("email=")
 	builder.WriteString(u.Email)
 	builder.WriteString(", ")
@@ -417,58 +467,70 @@ func (u *User) String() string {
 	return builder.String()
 }
 
+// SetLecTeamOwner manually set the edge as loaded state.
+func (e *User) SetLecTeamOwner(v *User) {
+	e.Edges.LecTeamOwner = v
+	e.Edges.loadedTypes[0] = true
+}
+
+// SetLecTeamMembers manually set the edge as loaded state.
+func (e *User) SetLecTeamMembers(v []*User) {
+	e.Edges.LecTeamMembers = v
+	e.Edges.loadedTypes[1] = true
+}
+
 // SetGroup manually set the edge as loaded state.
 func (e *User) SetGroup(v *Group) {
 	e.Edges.Group = v
-	e.Edges.loadedTypes[0] = true
+	e.Edges.loadedTypes[2] = true
 }
 
 // SetFiles manually set the edge as loaded state.
 func (e *User) SetFiles(v []*File) {
 	e.Edges.Files = v
-	e.Edges.loadedTypes[1] = true
+	e.Edges.loadedTypes[3] = true
 }
 
 // SetDavAccounts manually set the edge as loaded state.
 func (e *User) SetDavAccounts(v []*DavAccount) {
 	e.Edges.DavAccounts = v
-	e.Edges.loadedTypes[2] = true
+	e.Edges.loadedTypes[4] = true
 }
 
 // SetShares manually set the edge as loaded state.
 func (e *User) SetShares(v []*Share) {
 	e.Edges.Shares = v
-	e.Edges.loadedTypes[3] = true
+	e.Edges.loadedTypes[5] = true
 }
 
 // SetPasskey manually set the edge as loaded state.
 func (e *User) SetPasskey(v []*Passkey) {
 	e.Edges.Passkey = v
-	e.Edges.loadedTypes[4] = true
+	e.Edges.loadedTypes[6] = true
 }
 
 // SetTasks manually set the edge as loaded state.
 func (e *User) SetTasks(v []*Task) {
 	e.Edges.Tasks = v
-	e.Edges.loadedTypes[5] = true
+	e.Edges.loadedTypes[7] = true
 }
 
 // SetFsevents manually set the edge as loaded state.
 func (e *User) SetFsevents(v []*FsEvent) {
 	e.Edges.Fsevents = v
-	e.Edges.loadedTypes[6] = true
+	e.Edges.loadedTypes[8] = true
 }
 
 // SetEntities manually set the edge as loaded state.
 func (e *User) SetEntities(v []*Entity) {
 	e.Edges.Entities = v
-	e.Edges.loadedTypes[7] = true
+	e.Edges.loadedTypes[9] = true
 }
 
 // SetOauthGrants manually set the edge as loaded state.
 func (e *User) SetOauthGrants(v []*OAuthGrant) {
 	e.Edges.OauthGrants = v
-	e.Edges.loadedTypes[8] = true
+	e.Edges.loadedTypes[10] = true
 }
 
 // Users is a parsable slice of User.

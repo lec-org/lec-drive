@@ -11,6 +11,7 @@ export interface UserLoginService {
  * User 用户序列化器
  */
 export interface User {
+  team_space?: boolean;
   id: string;
   email?: string;
   nickname: string;

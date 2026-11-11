@@ -21,6 +21,8 @@ type File struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// LecDeletedAt holds the value of the "lec_deleted_at" field.
+	LecDeletedAt *time.Time `json:"lec_deleted_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -169,7 +171,7 @@ func (*File) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case file.FieldName:
 			values[i] = new(sql.NullString)
-		case file.FieldCreatedAt, file.FieldUpdatedAt:
+		case file.FieldLecDeletedAt, file.FieldCreatedAt, file.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -192,6 +194,13 @@ func (f *File) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			f.ID = int(value.Int64)
+		case file.FieldLecDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field lec_deleted_at", values[i])
+			} else if value.Valid {
+				f.LecDeletedAt = new(time.Time)
+				*f.LecDeletedAt = value.Time
+			}
 		case file.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -336,6 +345,11 @@ func (f *File) String() string {
 	var builder strings.Builder
 	builder.WriteString("File(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", f.ID))
+	if v := f.LecDeletedAt; v != nil {
+		builder.WriteString("lec_deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(f.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")

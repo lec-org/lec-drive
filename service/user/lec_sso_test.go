@@ -49,8 +49,13 @@ func Test外部身份隔离与显式管理员权限(t *testing.T) {
 	claims := &lecsso.Claims{Subject: "member", Name: "测试成员"}
 	first, err := upsertLecUser(c, config, claims)
 	require.NoError(t, err)
-	require.Equal(t, 1, first.ID)
+	require.NotNil(t, first.LecTeamOwnerID)
+	require.NotEqual(t, first.ID, *first.LecTeamOwnerID)
 	require.Equal(t, 2, first.GroupUsers, "首位 SSO 用户不能自动成为管理员")
+	second, err := upsertLecUser(c, config, &lecsso.Claims{Subject: "second-member", Name: "另一成员"})
+	require.NoError(t, err)
+	require.Equal(t, first.LecTeamOwnerID, second.LecTeamOwnerID, "同一组织成员共用资产归属")
+	require.NotEqual(t, first.ID, second.ID, "成员身份不能合并")
 	claims.Name = "更新姓名"
 	same, err := upsertLecUser(c, config, claims)
 	require.NoError(t, err)
@@ -60,6 +65,7 @@ func Test外部身份隔离与显式管理员权限(t *testing.T) {
 	other, err := upsertLecUser(c, config, claims)
 	require.NoError(t, err)
 	require.NotEqual(t, first.ID, other.ID, "不同发行方的同名 subject 必须隔离")
+	require.NotEqual(t, first.LecTeamOwnerID, other.LecTeamOwnerID, "不同发行方的团队资产必须隔离")
 	config.AdminSubjects = []string{"member"}
 	admin, err := upsertLecUser(c, config, claims)
 	require.NoError(t, err)

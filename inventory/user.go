@@ -213,6 +213,13 @@ func (c *userClient) MarkPasskeyUsed(ctx context.Context, uid int, keyId string)
 }
 
 func (c *userClient) Delete(ctx context.Context, uid int) error {
+	u, err := c.client.User.Get(ctx, uid)
+	if err != nil {
+		return err
+	}
+	if u.LecTeamOwnerID != nil && *u.LecTeamOwnerID == uid {
+		return errors.New("团队资产账号不能删除")
+	}
 	// Dav accounts
 	if _, err := c.client.DavAccount.Delete().Where(davaccount.OwnerID(uid)).Exec(schema.SkipSoftDelete(ctx)); err != nil {
 		return fmt.Errorf("failed to delete dav accounts: %w", err)
@@ -662,6 +669,9 @@ func CheckPassword(u *ent.User, password string) error {
 }
 
 func withUserEagerLoading(ctx context.Context, q *ent.UserQuery) *ent.UserQuery {
+	q.WithLecTeamOwner(func(owner *ent.UserQuery) {
+		owner.WithGroup(func(gq *ent.GroupQuery) { withGroupEagerLoading(ctx, gq) })
+	})
 	if v, ok := ctx.Value(LoadUserGroup{}).(bool); ok && v {
 		q.WithGroup(func(gq *ent.GroupQuery) {
 			withGroupEagerLoading(ctx, gq)

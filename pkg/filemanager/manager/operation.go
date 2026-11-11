@@ -144,6 +144,13 @@ func (m *manager) Rename(ctx context.Context, path *fs.URI, newName string) (fs.
 }
 
 func (m *manager) MoveOrCopy(ctx context.Context, src []*fs.URI, dst *fs.URI, isCopy bool) error {
+	if inventory.IsLecTeamMember(m.actor) && !inventory.IsLecTeamAdmin(m.actor) {
+		for _, uri := range src {
+			if uri.FileSystem() == constants.FileSystemTrash {
+				return serializer.NewError(serializer.CodeNoPermissionErr, "仅管理员可以恢复团队图片", nil)
+			}
+		}
+	}
 	indexDiff, err := m.fs.MoveOrCopy(ctx, src, dst, isCopy)
 	if err != nil {
 		return err
@@ -154,6 +161,9 @@ func (m *manager) MoveOrCopy(ctx context.Context, src []*fs.URI, dst *fs.URI, is
 }
 
 func (m *manager) SoftDelete(ctx context.Context, path ...*fs.URI) error {
+	if inventory.IsLecTeamMember(m.actor) && !inventory.IsLecTeamAdmin(m.actor) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "仅管理员可以删除团队图片", nil)
+	}
 	return m.fs.SoftDelete(ctx, path...)
 }
 
@@ -161,6 +171,9 @@ func (m *manager) SoftDelete(ctx context.Context, path ...*fs.URI) error {
 // It iterates through all pages of the trash listing and performs the deletion in
 // batches. Returns nil if the trash is already empty.
 func (m *manager) EmptyTrash(ctx context.Context) error {
+	if inventory.IsLecTeamMember(m.actor) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "团队回收站保留 30 天，到期由系统清理", nil)
+	}
 	trashUri, err := fs.NewUriFromString(fmt.Sprintf("%s://%s", constants.CloudreveScheme, constants.FileSystemTrash))
 	if err != nil {
 		return fmt.Errorf("failed to build trash uri: %w", err)
@@ -198,9 +211,15 @@ func (m *manager) EmptyTrash(ctx context.Context) error {
 }
 
 func (m *manager) Delete(ctx context.Context, path []*fs.URI, opts ...fs.Option) error {
+	if inventory.IsLecTeamMember(m.actor) && m.actor.LecSSOSubject != nil && !inventory.IsLecTeamAdmin(m.actor) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "仅管理员可以删除团队图片", nil)
+	}
 	o := newOption()
 	for _, opt := range opts {
 		opt.Apply(o)
+	}
+	if inventory.IsLecTeamMember(m.actor) && m.actor.LecSSOSubject != nil && (o.SkipSoftDelete || o.SysSkipSoftDelete || o.UnlinkOnly) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "团队图片必须保留 30 天，不支持提前彻底删除", nil)
 	}
 
 	if !o.SkipSoftDelete && !o.SysSkipSoftDelete {
@@ -281,6 +300,9 @@ func (l *manager) Refresh(ctx context.Context, d time.Duration, token string) (l
 }
 
 func (l *manager) Restore(ctx context.Context, path ...*fs.URI) error {
+	if inventory.IsLecTeamMember(l.actor) && !inventory.IsLecTeamAdmin(l.actor) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "仅管理员可以恢复团队图片", nil)
+	}
 	return l.fs.Restore(ctx, path...)
 }
 

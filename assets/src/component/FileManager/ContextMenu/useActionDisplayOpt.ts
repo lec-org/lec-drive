@@ -103,6 +103,7 @@ export const getActionOpt = (
   const currentUser = SessionManager.currentLoginOrNull();
   const currentUserAnonymous = SessionManager.currentUser();
   const groupBs = SessionManager.currentUserGroupPermission();
+  const teamSpace = !!currentUserAnonymous?.team_space;
   const display: DisplayOption = {
     allReadable: true,
     allUpdatable: true,
@@ -205,6 +206,10 @@ export const getActionOpt = (
     (display.orCapability.enabled(NavigatorCapability.soft_delete) ||
       display.orCapability.enabled(NavigatorCapability.delete_file));
   display.showRestore = display.andCapability?.enabled(NavigatorCapability.restore);
+  if (teamSpace) {
+    display.showDelete = display.showDelete && groupBs.enabled(GroupPermission.is_admin) && !display.hasTrashFile;
+    display.showRestore = display.showRestore && groupBs.enabled(GroupPermission.is_admin);
+  }
   display.showRename =
     targets.length == 1 &&
     display.allUpdatable &&
@@ -239,7 +244,7 @@ export const getActionOpt = (
     display.orCapability &&
     (currentUserAnonymous?.group?.direct_link_batch_size ?? 0) >= targets.length &&
     display.orCapability.enabled(NavigatorCapability.download_file);
-  display.showDirectLinkManagement = display.showDirectLink && targets.length == 1 && display.hasFile;
+  display.showDirectLinkManagement = !teamSpace && display.showDirectLink && targets.length == 1 && display.hasFile;
   display.showOpen =
     targets.length == 1 &&
     display.hasFile &&

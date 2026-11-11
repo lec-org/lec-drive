@@ -1,7 +1,8 @@
 import Add from "../Icons/Add.tsx";
 import Delete from "../Icons/Delete.tsx";
 import DeleteOutlined from "../Icons/DeleteOutlined.tsx";
-import { Button, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { Button, IconButton, Typography, useMediaQuery, useTheme } from "@mui/material";
+import SessionManager from "../../session";
 import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks.ts";
 import { openNewContextMenu } from "../../redux/thunks/filemanager.ts";
@@ -18,6 +19,8 @@ const NewButton = () => {
   const isTrash = currentFs === Filesystem.trash;
 
   if (isTrash) {
+    if (SessionManager.currentUser()?.team_space)
+      return <Typography variant="caption">保留 30 天，到期自动清理</Typography>;
     if (isMobile) {
       return (
         <IconButton onClick={() => dispatch(emptyTrash(FileManagerIndex.main))}>

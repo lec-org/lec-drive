@@ -35,6 +35,7 @@ import MoreVertical from "../../Icons/MoreVertical.tsx";
 import { SquareMenuItem } from "../ContextMenu/ContextMenu.tsx";
 import { FileManagerIndex } from "../FileManager.tsx";
 import { EncryptionStatusText } from "../Sidebar/BasicInfo.tsx";
+import SessionManager from "../../../session";
 
 const VersionControl = () => {
   const { t } = useTranslation();
@@ -186,11 +187,13 @@ const VersionControl = () => {
             <ListItemText>{t("application:fileManager.setAsCurrent")}</ListItemText>
           </SquareMenuItem>
         )}
-        {target?.owned && actionTarget?.id !== fileExtended?.primary_entity && (
-          <SquareMenuItem onClick={deleteTargetVersion} dense>
-            <ListItemText>{t("application:fileManager.delete")}</ListItemText>
-          </SquareMenuItem>
-        )}
+        {!SessionManager.currentUser()?.team_space &&
+          target?.owned &&
+          actionTarget?.id !== fileExtended?.primary_entity && (
+            <SquareMenuItem onClick={deleteTargetVersion} dense>
+              <ListItemText>{t("application:fileManager.delete")}</ListItemText>
+            </SquareMenuItem>
+          )}
       </Menu>
       <DraggableDialog
         title={t("application:fileManager.manageVersions")}

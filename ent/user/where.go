@@ -80,6 +80,11 @@ func LecSSOSubject(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLecSSOSubject, v))
 }
 
+// LecTeamOwnerID applies equality check predicate on the "lec_team_owner_id" field. It's identical to LecTeamOwnerIDEQ.
+func LecTeamOwnerID(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecTeamOwnerID, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
@@ -393,6 +398,36 @@ func LecSSOSubjectEqualFold(v string) predicate.User {
 // LecSSOSubjectContainsFold applies the ContainsFold predicate on the "lec_sso_subject" field.
 func LecSSOSubjectContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldLecSSOSubject, v))
+}
+
+// LecTeamOwnerIDEQ applies the EQ predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecTeamOwnerID, v))
+}
+
+// LecTeamOwnerIDNEQ applies the NEQ predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLecTeamOwnerID, v))
+}
+
+// LecTeamOwnerIDIn applies the In predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLecTeamOwnerID, vs...))
+}
+
+// LecTeamOwnerIDNotIn applies the NotIn predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLecTeamOwnerID, vs...))
+}
+
+// LecTeamOwnerIDIsNil applies the IsNil predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLecTeamOwnerID))
+}
+
+// LecTeamOwnerIDNotNil applies the NotNil predicate on the "lec_team_owner_id" field.
+func LecTeamOwnerIDNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLecTeamOwnerID))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.
@@ -838,6 +873,52 @@ func GroupUsersIn(vs ...int) predicate.User {
 // GroupUsersNotIn applies the NotIn predicate on the "group_users" field.
 func GroupUsersNotIn(vs ...int) predicate.User {
 	return predicate.User(sql.FieldNotIn(FieldGroupUsers, vs...))
+}
+
+// HasLecTeamOwner applies the HasEdge predicate on the "lec_team_owner" edge.
+func HasLecTeamOwner() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, LecTeamOwnerTable, LecTeamOwnerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLecTeamOwnerWith applies the HasEdge predicate on the "lec_team_owner" edge with a given conditions (other predicates).
+func HasLecTeamOwnerWith(preds ...predicate.User) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newLecTeamOwnerStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasLecTeamMembers applies the HasEdge predicate on the "lec_team_members" edge.
+func HasLecTeamMembers() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LecTeamMembersTable, LecTeamMembersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLecTeamMembersWith applies the HasEdge predicate on the "lec_team_members" edge with a given conditions (other predicates).
+func HasLecTeamMembersWith(preds ...predicate.User) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newLecTeamMembersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasGroup applies the HasEdge predicate on the "group" edge.

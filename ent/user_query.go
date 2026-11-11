@@ -27,19 +27,21 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx             *QueryContext
-	order           []user.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.User
-	withGroup       *GroupQuery
-	withFiles       *FileQuery
-	withDavAccounts *DavAccountQuery
-	withShares      *ShareQuery
-	withPasskey     *PasskeyQuery
-	withTasks       *TaskQuery
-	withFsevents    *FsEventQuery
-	withEntities    *EntityQuery
-	withOauthGrants *OAuthGrantQuery
+	ctx                *QueryContext
+	order              []user.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.User
+	withLecTeamOwner   *UserQuery
+	withLecTeamMembers *UserQuery
+	withGroup          *GroupQuery
+	withFiles          *FileQuery
+	withDavAccounts    *DavAccountQuery
+	withShares         *ShareQuery
+	withPasskey        *PasskeyQuery
+	withTasks          *TaskQuery
+	withFsevents       *FsEventQuery
+	withEntities       *EntityQuery
+	withOauthGrants    *OAuthGrantQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -74,6 +76,50 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
+}
+
+// QueryLecTeamOwner chains the current query on the "lec_team_owner" edge.
+func (uq *UserQuery) QueryLecTeamOwner() *UserQuery {
+	query := (&UserClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, user.LecTeamOwnerTable, user.LecTeamOwnerColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLecTeamMembers chains the current query on the "lec_team_members" edge.
+func (uq *UserQuery) QueryLecTeamMembers() *UserQuery {
+	query := (&UserClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LecTeamMembersTable, user.LecTeamMembersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryGroup chains the current query on the "group" edge.
@@ -461,24 +507,48 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:          uq.config,
-		ctx:             uq.ctx.Clone(),
-		order:           append([]user.OrderOption{}, uq.order...),
-		inters:          append([]Interceptor{}, uq.inters...),
-		predicates:      append([]predicate.User{}, uq.predicates...),
-		withGroup:       uq.withGroup.Clone(),
-		withFiles:       uq.withFiles.Clone(),
-		withDavAccounts: uq.withDavAccounts.Clone(),
-		withShares:      uq.withShares.Clone(),
-		withPasskey:     uq.withPasskey.Clone(),
-		withTasks:       uq.withTasks.Clone(),
-		withFsevents:    uq.withFsevents.Clone(),
-		withEntities:    uq.withEntities.Clone(),
-		withOauthGrants: uq.withOauthGrants.Clone(),
+		config:             uq.config,
+		ctx:                uq.ctx.Clone(),
+		order:              append([]user.OrderOption{}, uq.order...),
+		inters:             append([]Interceptor{}, uq.inters...),
+		predicates:         append([]predicate.User{}, uq.predicates...),
+		withLecTeamOwner:   uq.withLecTeamOwner.Clone(),
+		withLecTeamMembers: uq.withLecTeamMembers.Clone(),
+		withGroup:          uq.withGroup.Clone(),
+		withFiles:          uq.withFiles.Clone(),
+		withDavAccounts:    uq.withDavAccounts.Clone(),
+		withShares:         uq.withShares.Clone(),
+		withPasskey:        uq.withPasskey.Clone(),
+		withTasks:          uq.withTasks.Clone(),
+		withFsevents:       uq.withFsevents.Clone(),
+		withEntities:       uq.withEntities.Clone(),
+		withOauthGrants:    uq.withOauthGrants.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
+}
+
+// WithLecTeamOwner tells the query-builder to eager-load the nodes that are connected to
+// the "lec_team_owner" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithLecTeamOwner(opts ...func(*UserQuery)) *UserQuery {
+	query := (&UserClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withLecTeamOwner = query
+	return uq
+}
+
+// WithLecTeamMembers tells the query-builder to eager-load the nodes that are connected to
+// the "lec_team_members" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithLecTeamMembers(opts ...func(*UserQuery)) *UserQuery {
+	query := (&UserClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withLecTeamMembers = query
+	return uq
 }
 
 // WithGroup tells the query-builder to eager-load the nodes that are connected to
@@ -658,7 +728,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [11]bool{
+			uq.withLecTeamOwner != nil,
+			uq.withLecTeamMembers != nil,
 			uq.withGroup != nil,
 			uq.withFiles != nil,
 			uq.withDavAccounts != nil,
@@ -687,6 +759,19 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := uq.withLecTeamOwner; query != nil {
+		if err := uq.loadLecTeamOwner(ctx, query, nodes, nil,
+			func(n *User, e *User) { n.Edges.LecTeamOwner = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withLecTeamMembers; query != nil {
+		if err := uq.loadLecTeamMembers(ctx, query, nodes,
+			func(n *User) { n.Edges.LecTeamMembers = []*User{} },
+			func(n *User, e *User) { n.Edges.LecTeamMembers = append(n.Edges.LecTeamMembers, e) }); err != nil {
+			return nil, err
+		}
 	}
 	if query := uq.withGroup; query != nil {
 		if err := uq.loadGroup(ctx, query, nodes, nil,
@@ -753,6 +838,71 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	return nodes, nil
 }
 
+func (uq *UserQuery) loadLecTeamOwner(ctx context.Context, query *UserQuery, nodes []*User, init func(*User), assign func(*User, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*User)
+	for i := range nodes {
+		if nodes[i].LecTeamOwnerID == nil {
+			continue
+		}
+		fk := *nodes[i].LecTeamOwnerID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "lec_team_owner_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (uq *UserQuery) loadLecTeamMembers(ctx context.Context, query *UserQuery, nodes []*User, init func(*User), assign func(*User, *User)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(user.FieldLecTeamOwnerID)
+	}
+	query.Where(predicate.User(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.LecTeamMembersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LecTeamOwnerID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "lec_team_owner_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "lec_team_owner_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (uq *UserQuery) loadGroup(ctx context.Context, query *GroupQuery, nodes []*User, init func(*User), assign func(*User, *Group)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*User)
@@ -1048,6 +1198,9 @@ func (uq *UserQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != user.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if uq.withLecTeamOwner != nil {
+			_spec.Node.AddColumnOnce(user.FieldLecTeamOwnerID)
 		}
 		if uq.withGroup != nil {
 			_spec.Node.AddColumnOnce(user.FieldGroupUsers)

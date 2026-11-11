@@ -110,6 +110,10 @@ func LecSSOComplete(c *gin.Context) {
 
 func upsertLecUser(c *gin.Context, config lecsso.Config, claims *lecsso.Claims) (*ent.User, error) {
 	dep := dependency.FromContext(c)
+	team, err := inventory.EnsureLecTeamOwner(c, dep.DBClient(), config.Issuer, config.Organization)
+	if err != nil {
+		return nil, err
+	}
 	query := dep.DBClient().User.Query().Where(userent.LecSSOIssuerEQ(config.Issuer), userent.LecSSOSubjectEQ(claims.Subject))
 	u, err := query.Only(c)
 	groupID := dep.SettingProvider().DefaultGroup(c)
@@ -145,6 +149,9 @@ func upsertLecUser(c *gin.Context, config lecsso.Config, claims *lecsso.Claims) 
 	}
 	if u.Status != userent.StatusActive {
 		return nil, errors.New("当前 Drive 账号不可用")
+	}
+	if err := inventory.AssignLecTeam(c, dep.DBClient(), u, team); err != nil {
+		return nil, err
 	}
 	name := strings.TrimSpace(claims.Name)
 	if name == "" {

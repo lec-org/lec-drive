@@ -95,19 +95,19 @@ func init() {
 	fileFields := schema.File{}.Fields()
 	_ = fileFields
 	// fileDescCreatedAt is the schema descriptor for created_at field.
-	fileDescCreatedAt := fileFields[0].Descriptor()
+	fileDescCreatedAt := fileFields[1].Descriptor()
 	// file.DefaultCreatedAt holds the default value on creation for the created_at field.
 	file.DefaultCreatedAt = fileDescCreatedAt.Default.(func() time.Time)
 	// fileDescUpdatedAt is the schema descriptor for updated_at field.
-	fileDescUpdatedAt := fileFields[1].Descriptor()
+	fileDescUpdatedAt := fileFields[2].Descriptor()
 	// file.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	file.DefaultUpdatedAt = fileDescUpdatedAt.Default.(func() time.Time)
 	// fileDescSize is the schema descriptor for size field.
-	fileDescSize := fileFields[5].Descriptor()
+	fileDescSize := fileFields[6].Descriptor()
 	// file.DefaultSize holds the default value on creation for the size field.
 	file.DefaultSize = fileDescSize.Default.(int64)
 	// fileDescIsSymbolic is the schema descriptor for is_symbolic field.
-	fileDescIsSymbolic := fileFields[8].Descriptor()
+	fileDescIsSymbolic := fileFields[9].Descriptor()
 	// file.DefaultIsSymbolic holds the default value on creation for the is_symbolic field.
 	file.DefaultIsSymbolic = fileDescIsSymbolic.Default.(bool)
 	fseventMixin := schema.FsEvent{}.Mixin()
@@ -403,19 +403,19 @@ func init() {
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	user.UpdateDefaultUpdatedAt = userDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// userDescEmail is the schema descriptor for email field.
-	userDescEmail := userFields[2].Descriptor()
+	userDescEmail := userFields[3].Descriptor()
 	// user.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	user.EmailValidator = userDescEmail.Validators[0].(func(string) error)
 	// userDescNick is the schema descriptor for nick field.
-	userDescNick := userFields[3].Descriptor()
+	userDescNick := userFields[4].Descriptor()
 	// user.NickValidator is a validator for the "nick" field. It is called by the builders before save.
 	user.NickValidator = userDescNick.Validators[0].(func(string) error)
 	// userDescStorage is the schema descriptor for storage field.
-	userDescStorage := userFields[6].Descriptor()
+	userDescStorage := userFields[7].Descriptor()
 	// user.DefaultStorage holds the default value on creation for the storage field.
 	user.DefaultStorage = userDescStorage.Default.(int64)
 	// userDescSettings is the schema descriptor for settings field.
-	userDescSettings := userFields[9].Descriptor()
+	userDescSettings := userFields[10].Descriptor()
 	// user.DefaultSettings holds the default value on creation for the settings field.
 	user.DefaultSettings = userDescSettings.Default.(*types.UserSetting)
 }

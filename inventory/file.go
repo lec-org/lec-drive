@@ -411,6 +411,7 @@ func (f *fileClient) SoftDelete(ctx context.Context, file *ent.File) error {
 	// Rename file to random UUID and make it stale
 	_, err := f.client.File.UpdateOne(file).
 		SetName(newName.String()).
+		SetLecDeletedAt(time.Now()).
 		ClearParent().
 		Save(ctx)
 	if err != nil {
@@ -514,6 +515,9 @@ func (f *fileClient) DeleteByUser(ctx context.Context, uid int) error {
 }
 
 func (f *fileClient) Delete(ctx context.Context, files []*ent.File, options *types.EntityProps) ([]*ent.Entity, StorageDiff, error) {
+	if err := CheckTeamPurge(ctx, f.client, files); err != nil {
+		return nil, nil, err
+	}
 	// 1. Decrease reference count for all entities;
 	// entities stores the relation between its reference count in `files` and entity ID.
 	entities := make(map[int]int)

@@ -18,6 +18,7 @@ func (User) Fields() []ent.Field {
 		// 独立保存外部身份，避免按邮箱合并导致账号被错误关联。
 		field.String("lec_sso_issuer").Optional().Nillable(),
 		field.String("lec_sso_subject").Optional().Nillable(),
+		field.Int("lec_team_owner_id").Optional().Nillable(),
 		field.String("email").
 			MaxLen(100).
 			Unique(),
@@ -49,6 +50,7 @@ func (User) Indexes() []ent.Index {
 
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("lec_team_members", User.Type).From("lec_team_owner").Unique().Field("lec_team_owner_id"),
 		edge.From("group", Group.Type).
 			Ref("users").
 			Field("group_users").

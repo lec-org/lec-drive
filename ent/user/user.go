@@ -27,6 +27,8 @@ const (
 	FieldLecSSOIssuer = "lec_sso_issuer"
 	// FieldLecSSOSubject holds the string denoting the lec_sso_subject field in the database.
 	FieldLecSSOSubject = "lec_sso_subject"
+	// FieldLecTeamOwnerID holds the string denoting the lec_team_owner_id field in the database.
+	FieldLecTeamOwnerID = "lec_team_owner_id"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldNick holds the string denoting the nick field in the database.
@@ -45,6 +47,10 @@ const (
 	FieldSettings = "settings"
 	// FieldGroupUsers holds the string denoting the group_users field in the database.
 	FieldGroupUsers = "group_users"
+	// EdgeLecTeamOwner holds the string denoting the lec_team_owner edge name in mutations.
+	EdgeLecTeamOwner = "lec_team_owner"
+	// EdgeLecTeamMembers holds the string denoting the lec_team_members edge name in mutations.
+	EdgeLecTeamMembers = "lec_team_members"
 	// EdgeGroup holds the string denoting the group edge name in mutations.
 	EdgeGroup = "group"
 	// EdgeFiles holds the string denoting the files edge name in mutations.
@@ -65,6 +71,14 @@ const (
 	EdgeOauthGrants = "oauth_grants"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// LecTeamOwnerTable is the table that holds the lec_team_owner relation/edge.
+	LecTeamOwnerTable = "users"
+	// LecTeamOwnerColumn is the table column denoting the lec_team_owner relation/edge.
+	LecTeamOwnerColumn = "lec_team_owner_id"
+	// LecTeamMembersTable is the table that holds the lec_team_members relation/edge.
+	LecTeamMembersTable = "users"
+	// LecTeamMembersColumn is the table column denoting the lec_team_members relation/edge.
+	LecTeamMembersColumn = "lec_team_owner_id"
 	// GroupTable is the table that holds the group relation/edge.
 	GroupTable = "users"
 	// GroupInverseTable is the table name for the Group entity.
@@ -138,6 +152,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldLecSSOIssuer,
 	FieldLecSSOSubject,
+	FieldLecTeamOwnerID,
 	FieldEmail,
 	FieldNick,
 	FieldPassword,
@@ -244,6 +259,11 @@ func ByLecSSOSubject(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLecSSOSubject, opts...).ToFunc()
 }
 
+// ByLecTeamOwnerID orders the results by the lec_team_owner_id field.
+func ByLecTeamOwnerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLecTeamOwnerID, opts...).ToFunc()
+}
+
 // ByEmail orders the results by the email field.
 func ByEmail(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmail, opts...).ToFunc()
@@ -282,6 +302,27 @@ func ByAvatar(opts ...sql.OrderTermOption) OrderOption {
 // ByGroupUsers orders the results by the group_users field.
 func ByGroupUsers(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldGroupUsers, opts...).ToFunc()
+}
+
+// ByLecTeamOwnerField orders the results by lec_team_owner field.
+func ByLecTeamOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLecTeamOwnerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByLecTeamMembersCount orders the results by lec_team_members count.
+func ByLecTeamMembersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLecTeamMembersStep(), opts...)
+	}
+}
+
+// ByLecTeamMembers orders the results by lec_team_members terms.
+func ByLecTeamMembers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLecTeamMembersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
 }
 
 // ByGroupField orders the results by group field.
@@ -401,6 +442,20 @@ func ByOauthGrants(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newOauthGrantsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
+}
+func newLecTeamOwnerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, LecTeamOwnerTable, LecTeamOwnerColumn),
+	)
+}
+func newLecTeamMembersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, LecTeamMembersTable, LecTeamMembersColumn),
+	)
 }
 func newGroupStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

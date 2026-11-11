@@ -93,6 +93,7 @@ export const SideNavItemComponent = ({ item }: { item: NavigationItem }) => {
   const active = useMemo(() => {
     return location.pathname == item.path || location.pathname.startsWith(item.path + "/");
   }, [location.pathname, item.path]);
+  if (SessionManager.currentUser()?.team_space && item.label === "navbar.myShare") return null;
   return (
     <>
       {item.pro && <ProDialog open={proOpen} onClose={() => setProOpen(false)} />}

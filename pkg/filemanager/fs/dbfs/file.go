@@ -62,8 +62,8 @@ const (
 	MetadataUploadSessionPrefix = MetadataSysPrefix + "upload_session"
 	MetadataUploadSessionID     = MetadataUploadSessionPrefix + "_id"
 	MetadataSharedRedirect      = MetadataSysPrefix + "shared_redirect"
-	MetadataRestoreUri          = MetadataSysPrefix + "restore_uri"
-	MetadataExpectedCollectTime = MetadataSysPrefix + "expected_collect_time"
+	MetadataRestoreUri          = inventory.RestoreURIKey
+	MetadataExpectedCollectTime = inventory.TrashCollectTimeKey
 	MetadataSharedOwner         = MetadataSysPrefix + "shared_owner"
 
 	ThumbMetadataPrefix = "thumb:"

@@ -8,6 +8,7 @@ import { defaultPath, defaultSharedWithMePath, defaultTrashPath } from "../../..
 import { useAppSelector } from "../../../redux/hooks.ts";
 import SessionManager, { UserSettings } from "../../../session";
 import CrUri, { Filesystem } from "../../../util/uri.ts";
+import { GroupPermission } from "../../../api/user.ts";
 import { FileManagerIndex } from "../FileManager.tsx";
 import { FmIndexContext } from "../FmIndexContext.tsx";
 import Pinned, { usePinned } from "./Pinned.tsx";
@@ -62,6 +63,8 @@ const TreeNavigation = React.memo(
     }, [showShareTree]);
 
     const isLogin = !!SessionManager.currentLoginOrNull();
+    const teamSpace = !!SessionManager.currentUser()?.team_space;
+    const canManage = !teamSpace || SessionManager.currentUserGroupPermission().enabled(GroupPermission.is_admin);
 
     return (
       <FmIndexContext.Provider value={index}>
@@ -119,10 +122,10 @@ const TreeNavigation = React.memo(
                         />
                       </>
                     )}
-                    {!disableSharedWithMe && (
+                    {!disableSharedWithMe && !teamSpace && (
                       <TreeFiles level={0} path={defaultSharedWithMePath} key={defaultSharedWithMePath} />
                     )}
-                    {!disableTrash && (
+                    {!disableTrash && canManage && (
                       <TreeFiles
                         level={0}
                         flatten

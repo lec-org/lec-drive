@@ -10,7 +10,10 @@ import (
 
 	"github.com/cloudreve/Cloudreve/v4/application/dependency"
 	"github.com/cloudreve/Cloudreve/v4/ent"
+	"github.com/cloudreve/Cloudreve/v4/ent/entity"
+	"github.com/cloudreve/Cloudreve/v4/ent/file"
 	"github.com/cloudreve/Cloudreve/v4/ent/task"
+	"github.com/cloudreve/Cloudreve/v4/ent/user"
 	"github.com/cloudreve/Cloudreve/v4/inventory"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
 	"github.com/cloudreve/Cloudreve/v4/pkg/cache"
@@ -189,6 +192,15 @@ func (m *EntityRecycleRoutineTask) Do(ctx context.Context) (task.Status, error) 
 // RecycleEntities delete given entities. If the ID list is empty, it will walk through
 // all stale entities in DB.
 func (m *manager) RecycleEntities(ctx context.Context, force bool, entityIDs ...int) error {
+	if force {
+		protected, err := m.dep.DBClient().Entity.Query().Where(entity.IDIn(entityIDs...), entity.HasFileWith(file.HasOwnerWith(user.LecTeamOwnerIDNotNil()))).Exist(ctx)
+		if err != nil {
+			return err
+		}
+		if protected {
+			return serializer.NewError(serializer.CodeNoPermissionErr, "团队图片仍有文件引用，不能绕过 30 天保留期清理", nil)
+		}
+	}
 	ae := serializer.NewAggregateError()
 	entities, err := m.fs.StaleEntities(ctx, entityIDs...)
 	if err != nil {

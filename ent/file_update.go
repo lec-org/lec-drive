@@ -35,6 +35,26 @@ func (fu *FileUpdate) Where(ps ...predicate.File) *FileUpdate {
 	return fu
 }
 
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (fu *FileUpdate) SetLecDeletedAt(t time.Time) *FileUpdate {
+	fu.mutation.SetLecDeletedAt(t)
+	return fu
+}
+
+// SetNillableLecDeletedAt sets the "lec_deleted_at" field if the given value is not nil.
+func (fu *FileUpdate) SetNillableLecDeletedAt(t *time.Time) *FileUpdate {
+	if t != nil {
+		fu.SetLecDeletedAt(*t)
+	}
+	return fu
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (fu *FileUpdate) ClearLecDeletedAt() *FileUpdate {
+	fu.mutation.ClearLecDeletedAt()
+	return fu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (fu *FileUpdate) SetUpdatedAt(t time.Time) *FileUpdate {
 	fu.mutation.SetUpdatedAt(t)
@@ -505,6 +525,12 @@ func (fu *FileUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := fu.mutation.LecDeletedAt(); ok {
+		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)
+	}
+	if fu.mutation.LecDeletedAtCleared() {
+		_spec.ClearField(file.FieldLecDeletedAt, field.TypeTime)
+	}
 	if value, ok := fu.mutation.UpdatedAt(); ok {
 		_spec.SetField(file.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -871,6 +897,26 @@ type FileUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *FileMutation
+}
+
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (fuo *FileUpdateOne) SetLecDeletedAt(t time.Time) *FileUpdateOne {
+	fuo.mutation.SetLecDeletedAt(t)
+	return fuo
+}
+
+// SetNillableLecDeletedAt sets the "lec_deleted_at" field if the given value is not nil.
+func (fuo *FileUpdateOne) SetNillableLecDeletedAt(t *time.Time) *FileUpdateOne {
+	if t != nil {
+		fuo.SetLecDeletedAt(*t)
+	}
+	return fuo
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (fuo *FileUpdateOne) ClearLecDeletedAt() *FileUpdateOne {
+	fuo.mutation.ClearLecDeletedAt()
+	return fuo
 }
 
 // SetUpdatedAt sets the "updated_at" field.
@@ -1372,6 +1418,12 @@ func (fuo *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := fuo.mutation.LecDeletedAt(); ok {
+		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)
+	}
+	if fuo.mutation.LecDeletedAtCleared() {
+		_spec.ClearField(file.FieldLecDeletedAt, field.TypeTime)
 	}
 	if value, ok := fuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(file.FieldUpdatedAt, field.TypeTime, value)

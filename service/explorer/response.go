@@ -425,7 +425,7 @@ func BuildFileResponse(ctx context.Context, u *ent.User, f fs.File, hasher hashi
 		Path:          f.Uri(false).String(),
 		Shared:        f.Shared(),
 		Capability:    cap,
-		Owned:         owner == nil || owner.ID == u.ID,
+		Owned:         owner == nil || owner.ID == inventory.StorageUser(u).ID,
 		FolderSummary: f.FolderSummary(),
 		ExtendedInfo:  BuildExtendedInfo(ctx, u, f, hasher),
 		PrimaryEntity: hashid.EncodeEntityID(hasher, f.PrimaryEntityID()),

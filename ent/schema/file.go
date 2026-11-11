@@ -21,6 +21,8 @@ type File struct {
 // Fields of the File.
 func (File) Fields() []ent.Field {
 	return []ent.Field{
+		// 独立记录回收时间，客户端元数据不能缩短团队图片的保留期。
+		field.Time("lec_deleted_at").Optional().Nillable(),
 		field.Time("created_at").
 			Immutable().
 			Default(time.Now).

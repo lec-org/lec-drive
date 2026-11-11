@@ -2976,6 +2976,7 @@ type FileMutation struct {
 	op                      Op
 	typ                     string
 	id                      *int
+	lec_deleted_at          *time.Time
 	created_at              *time.Time
 	updated_at              *time.Time
 	_type                   *int
@@ -3110,6 +3111,55 @@ func (m *FileMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetLecDeletedAt sets the "lec_deleted_at" field.
+func (m *FileMutation) SetLecDeletedAt(t time.Time) {
+	m.lec_deleted_at = &t
+}
+
+// LecDeletedAt returns the value of the "lec_deleted_at" field in the mutation.
+func (m *FileMutation) LecDeletedAt() (r time.Time, exists bool) {
+	v := m.lec_deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLecDeletedAt returns the old "lec_deleted_at" field's value of the File entity.
+// If the File object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileMutation) OldLecDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLecDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLecDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLecDeletedAt: %w", err)
+	}
+	return oldValue.LecDeletedAt, nil
+}
+
+// ClearLecDeletedAt clears the value of the "lec_deleted_at" field.
+func (m *FileMutation) ClearLecDeletedAt() {
+	m.lec_deleted_at = nil
+	m.clearedFields[file.FieldLecDeletedAt] = struct{}{}
+}
+
+// LecDeletedAtCleared returns if the "lec_deleted_at" field was cleared in this mutation.
+func (m *FileMutation) LecDeletedAtCleared() bool {
+	_, ok := m.clearedFields[file.FieldLecDeletedAt]
+	return ok
+}
+
+// ResetLecDeletedAt resets all changes to the "lec_deleted_at" field.
+func (m *FileMutation) ResetLecDeletedAt() {
+	m.lec_deleted_at = nil
+	delete(m.clearedFields, file.FieldLecDeletedAt)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -4032,7 +4082,10 @@ func (m *FileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FileMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
+	if m.lec_deleted_at != nil {
+		fields = append(fields, file.FieldLecDeletedAt)
+	}
 	if m.created_at != nil {
 		fields = append(fields, file.FieldCreatedAt)
 	}
@@ -4074,6 +4127,8 @@ func (m *FileMutation) Fields() []string {
 // schema.
 func (m *FileMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case file.FieldLecDeletedAt:
+		return m.LecDeletedAt()
 	case file.FieldCreatedAt:
 		return m.CreatedAt()
 	case file.FieldUpdatedAt:
@@ -4105,6 +4160,8 @@ func (m *FileMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *FileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case file.FieldLecDeletedAt:
+		return m.OldLecDeletedAt(ctx)
 	case file.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case file.FieldUpdatedAt:
@@ -4136,6 +4193,13 @@ func (m *FileMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *FileMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case file.FieldLecDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLecDeletedAt(v)
+		return nil
 	case file.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -4282,6 +4346,9 @@ func (m *FileMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *FileMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(file.FieldLecDeletedAt) {
+		fields = append(fields, file.FieldLecDeletedAt)
+	}
 	if m.FieldCleared(file.FieldPrimaryEntity) {
 		fields = append(fields, file.FieldPrimaryEntity)
 	}
@@ -4308,6 +4375,9 @@ func (m *FileMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *FileMutation) ClearField(name string) error {
 	switch name {
+	case file.FieldLecDeletedAt:
+		m.ClearLecDeletedAt()
+		return nil
 	case file.FieldPrimaryEntity:
 		m.ClearPrimaryEntity()
 		return nil
@@ -4328,6 +4398,9 @@ func (m *FileMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *FileMutation) ResetField(name string) error {
 	switch name {
+	case file.FieldLecDeletedAt:
+		m.ResetLecDeletedAt()
+		return nil
 	case file.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -15054,53 +15127,58 @@ func (m *TaskMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	lec_sso_issuer      *string
-	lec_sso_subject     *string
-	email               *string
-	nick                *string
-	password            *string
-	status              *user.Status
-	storage             *int64
-	addstorage          *int64
-	two_factor_secret   *string
-	avatar              *string
-	settings            **types.UserSetting
-	clearedFields       map[string]struct{}
-	group               *int
-	clearedgroup        bool
-	files               map[int]struct{}
-	removedfiles        map[int]struct{}
-	clearedfiles        bool
-	dav_accounts        map[int]struct{}
-	removeddav_accounts map[int]struct{}
-	cleareddav_accounts bool
-	shares              map[int]struct{}
-	removedshares       map[int]struct{}
-	clearedshares       bool
-	passkey             map[int]struct{}
-	removedpasskey      map[int]struct{}
-	clearedpasskey      bool
-	tasks               map[int]struct{}
-	removedtasks        map[int]struct{}
-	clearedtasks        bool
-	fsevents            map[int]struct{}
-	removedfsevents     map[int]struct{}
-	clearedfsevents     bool
-	entities            map[int]struct{}
-	removedentities     map[int]struct{}
-	clearedentities     bool
-	oauth_grants        map[int]struct{}
-	removedoauth_grants map[int]struct{}
-	clearedoauth_grants bool
-	done                bool
-	oldValue            func(context.Context) (*User, error)
-	predicates          []predicate.User
+	op                      Op
+	typ                     string
+	id                      *int
+	created_at              *time.Time
+	updated_at              *time.Time
+	deleted_at              *time.Time
+	lec_sso_issuer          *string
+	lec_sso_subject         *string
+	email                   *string
+	nick                    *string
+	password                *string
+	status                  *user.Status
+	storage                 *int64
+	addstorage              *int64
+	two_factor_secret       *string
+	avatar                  *string
+	settings                **types.UserSetting
+	clearedFields           map[string]struct{}
+	lec_team_owner          *int
+	clearedlec_team_owner   bool
+	lec_team_members        map[int]struct{}
+	removedlec_team_members map[int]struct{}
+	clearedlec_team_members bool
+	group                   *int
+	clearedgroup            bool
+	files                   map[int]struct{}
+	removedfiles            map[int]struct{}
+	clearedfiles            bool
+	dav_accounts            map[int]struct{}
+	removeddav_accounts     map[int]struct{}
+	cleareddav_accounts     bool
+	shares                  map[int]struct{}
+	removedshares           map[int]struct{}
+	clearedshares           bool
+	passkey                 map[int]struct{}
+	removedpasskey          map[int]struct{}
+	clearedpasskey          bool
+	tasks                   map[int]struct{}
+	removedtasks            map[int]struct{}
+	clearedtasks            bool
+	fsevents                map[int]struct{}
+	removedfsevents         map[int]struct{}
+	clearedfsevents         bool
+	entities                map[int]struct{}
+	removedentities         map[int]struct{}
+	clearedentities         bool
+	oauth_grants            map[int]struct{}
+	removedoauth_grants     map[int]struct{}
+	clearedoauth_grants     bool
+	done                    bool
+	oldValue                func(context.Context) (*User, error)
+	predicates              []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -15418,6 +15496,55 @@ func (m *UserMutation) LecSSOSubjectCleared() bool {
 func (m *UserMutation) ResetLecSSOSubject() {
 	m.lec_sso_subject = nil
 	delete(m.clearedFields, user.FieldLecSSOSubject)
+}
+
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (m *UserMutation) SetLecTeamOwnerID(i int) {
+	m.lec_team_owner = &i
+}
+
+// LecTeamOwnerID returns the value of the "lec_team_owner_id" field in the mutation.
+func (m *UserMutation) LecTeamOwnerID() (r int, exists bool) {
+	v := m.lec_team_owner
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLecTeamOwnerID returns the old "lec_team_owner_id" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLecTeamOwnerID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLecTeamOwnerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLecTeamOwnerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLecTeamOwnerID: %w", err)
+	}
+	return oldValue.LecTeamOwnerID, nil
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (m *UserMutation) ClearLecTeamOwnerID() {
+	m.lec_team_owner = nil
+	m.clearedFields[user.FieldLecTeamOwnerID] = struct{}{}
+}
+
+// LecTeamOwnerIDCleared returns if the "lec_team_owner_id" field was cleared in this mutation.
+func (m *UserMutation) LecTeamOwnerIDCleared() bool {
+	_, ok := m.clearedFields[user.FieldLecTeamOwnerID]
+	return ok
+}
+
+// ResetLecTeamOwnerID resets all changes to the "lec_team_owner_id" field.
+func (m *UserMutation) ResetLecTeamOwnerID() {
+	m.lec_team_owner = nil
+	delete(m.clearedFields, user.FieldLecTeamOwnerID)
 }
 
 // SetEmail sets the "email" field.
@@ -15814,6 +15941,87 @@ func (m *UserMutation) OldGroupUsers(ctx context.Context) (v int, err error) {
 // ResetGroupUsers resets all changes to the "group_users" field.
 func (m *UserMutation) ResetGroupUsers() {
 	m.group = nil
+}
+
+// ClearLecTeamOwner clears the "lec_team_owner" edge to the User entity.
+func (m *UserMutation) ClearLecTeamOwner() {
+	m.clearedlec_team_owner = true
+	m.clearedFields[user.FieldLecTeamOwnerID] = struct{}{}
+}
+
+// LecTeamOwnerCleared reports if the "lec_team_owner" edge to the User entity was cleared.
+func (m *UserMutation) LecTeamOwnerCleared() bool {
+	return m.LecTeamOwnerIDCleared() || m.clearedlec_team_owner
+}
+
+// LecTeamOwnerIDs returns the "lec_team_owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// LecTeamOwnerID instead. It exists only for internal usage by the builders.
+func (m *UserMutation) LecTeamOwnerIDs() (ids []int) {
+	if id := m.lec_team_owner; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetLecTeamOwner resets all changes to the "lec_team_owner" edge.
+func (m *UserMutation) ResetLecTeamOwner() {
+	m.lec_team_owner = nil
+	m.clearedlec_team_owner = false
+}
+
+// AddLecTeamMemberIDs adds the "lec_team_members" edge to the User entity by ids.
+func (m *UserMutation) AddLecTeamMemberIDs(ids ...int) {
+	if m.lec_team_members == nil {
+		m.lec_team_members = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.lec_team_members[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLecTeamMembers clears the "lec_team_members" edge to the User entity.
+func (m *UserMutation) ClearLecTeamMembers() {
+	m.clearedlec_team_members = true
+}
+
+// LecTeamMembersCleared reports if the "lec_team_members" edge to the User entity was cleared.
+func (m *UserMutation) LecTeamMembersCleared() bool {
+	return m.clearedlec_team_members
+}
+
+// RemoveLecTeamMemberIDs removes the "lec_team_members" edge to the User entity by IDs.
+func (m *UserMutation) RemoveLecTeamMemberIDs(ids ...int) {
+	if m.removedlec_team_members == nil {
+		m.removedlec_team_members = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.lec_team_members, ids[i])
+		m.removedlec_team_members[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLecTeamMembers returns the removed IDs of the "lec_team_members" edge to the User entity.
+func (m *UserMutation) RemovedLecTeamMembersIDs() (ids []int) {
+	for id := range m.removedlec_team_members {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LecTeamMembersIDs returns the "lec_team_members" edge IDs in the mutation.
+func (m *UserMutation) LecTeamMembersIDs() (ids []int) {
+	for id := range m.lec_team_members {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLecTeamMembers resets all changes to the "lec_team_members" edge.
+func (m *UserMutation) ResetLecTeamMembers() {
+	m.lec_team_members = nil
+	m.clearedlec_team_members = false
+	m.removedlec_team_members = nil
 }
 
 // SetGroupID sets the "group" edge to the Group entity by id.
@@ -16322,7 +16530,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -16337,6 +16545,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.lec_sso_subject != nil {
 		fields = append(fields, user.FieldLecSSOSubject)
+	}
+	if m.lec_team_owner != nil {
+		fields = append(fields, user.FieldLecTeamOwnerID)
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
@@ -16383,6 +16594,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.LecSSOIssuer()
 	case user.FieldLecSSOSubject:
 		return m.LecSSOSubject()
+	case user.FieldLecTeamOwnerID:
+		return m.LecTeamOwnerID()
 	case user.FieldEmail:
 		return m.Email()
 	case user.FieldNick:
@@ -16420,6 +16633,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLecSSOIssuer(ctx)
 	case user.FieldLecSSOSubject:
 		return m.OldLecSSOSubject(ctx)
+	case user.FieldLecTeamOwnerID:
+		return m.OldLecTeamOwnerID(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
 	case user.FieldNick:
@@ -16481,6 +16696,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLecSSOSubject(v)
+		return nil
+	case user.FieldLecTeamOwnerID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLecTeamOwnerID(v)
 		return nil
 	case user.FieldEmail:
 		v, ok := value.(string)
@@ -16599,6 +16821,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldLecSSOSubject) {
 		fields = append(fields, user.FieldLecSSOSubject)
 	}
+	if m.FieldCleared(user.FieldLecTeamOwnerID) {
+		fields = append(fields, user.FieldLecTeamOwnerID)
+	}
 	if m.FieldCleared(user.FieldPassword) {
 		fields = append(fields, user.FieldPassword)
 	}
@@ -16633,6 +16858,9 @@ func (m *UserMutation) ClearField(name string) error {
 		return nil
 	case user.FieldLecSSOSubject:
 		m.ClearLecSSOSubject()
+		return nil
+	case user.FieldLecTeamOwnerID:
+		m.ClearLecTeamOwnerID()
 		return nil
 	case user.FieldPassword:
 		m.ClearPassword()
@@ -16669,6 +16897,9 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldLecSSOSubject:
 		m.ResetLecSSOSubject()
 		return nil
+	case user.FieldLecTeamOwnerID:
+		m.ResetLecTeamOwnerID()
+		return nil
 	case user.FieldEmail:
 		m.ResetEmail()
 		return nil
@@ -16702,7 +16933,13 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 11)
+	if m.lec_team_owner != nil {
+		edges = append(edges, user.EdgeLecTeamOwner)
+	}
+	if m.lec_team_members != nil {
+		edges = append(edges, user.EdgeLecTeamMembers)
+	}
 	if m.group != nil {
 		edges = append(edges, user.EdgeGroup)
 	}
@@ -16737,6 +16974,16 @@ func (m *UserMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case user.EdgeLecTeamOwner:
+		if id := m.lec_team_owner; id != nil {
+			return []ent.Value{*id}
+		}
+	case user.EdgeLecTeamMembers:
+		ids := make([]ent.Value, 0, len(m.lec_team_members))
+		for id := range m.lec_team_members {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeGroup:
 		if id := m.group; id != nil {
 			return []ent.Value{*id}
@@ -16795,7 +17042,10 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 11)
+	if m.removedlec_team_members != nil {
+		edges = append(edges, user.EdgeLecTeamMembers)
+	}
 	if m.removedfiles != nil {
 		edges = append(edges, user.EdgeFiles)
 	}
@@ -16827,6 +17077,12 @@ func (m *UserMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case user.EdgeLecTeamMembers:
+		ids := make([]ent.Value, 0, len(m.removedlec_team_members))
+		for id := range m.removedlec_team_members {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeFiles:
 		ids := make([]ent.Value, 0, len(m.removedfiles))
 		for id := range m.removedfiles {
@@ -16881,7 +17137,13 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 11)
+	if m.clearedlec_team_owner {
+		edges = append(edges, user.EdgeLecTeamOwner)
+	}
+	if m.clearedlec_team_members {
+		edges = append(edges, user.EdgeLecTeamMembers)
+	}
 	if m.clearedgroup {
 		edges = append(edges, user.EdgeGroup)
 	}
@@ -16916,6 +17178,10 @@ func (m *UserMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserMutation) EdgeCleared(name string) bool {
 	switch name {
+	case user.EdgeLecTeamOwner:
+		return m.clearedlec_team_owner
+	case user.EdgeLecTeamMembers:
+		return m.clearedlec_team_members
 	case user.EdgeGroup:
 		return m.clearedgroup
 	case user.EdgeFiles:
@@ -16942,6 +17208,9 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
+	case user.EdgeLecTeamOwner:
+		m.ClearLecTeamOwner()
+		return nil
 	case user.EdgeGroup:
 		m.ClearGroup()
 		return nil
@@ -16953,6 +17222,12 @@ func (m *UserMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserMutation) ResetEdge(name string) error {
 	switch name {
+	case user.EdgeLecTeamOwner:
+		m.ResetLecTeamOwner()
+		return nil
+	case user.EdgeLecTeamMembers:
+		m.ResetLecTeamMembers()
+		return nil
 	case user.EdgeGroup:
 		m.ResetGroup()
 		return nil

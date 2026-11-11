@@ -67,9 +67,10 @@ const DeleteConfirmation = () => {
   }, [promiseId, unlink, skipSoftDelete, singleFilePermanently, multipleFilesPermanently]);
 
   const permission = SessionManager.currentUserGroupPermission();
-  const showSkipSoftDeleteOption = !hasTrashFiles;
+  const teamSpace = !!SessionManager.currentUser()?.team_space;
+  const showSkipSoftDeleteOption = !hasTrashFiles && !teamSpace;
   const showUnlinkOption = (skipSoftDelete || hasTrashFiles) && permission.enabled(GroupPermission.advance_delete);
-  const showAdvanceOptions = showUnlinkOption || showSkipSoftDeleteOption;
+  const showAdvanceOptions = !teamSpace && (showUnlinkOption || showSkipSoftDeleteOption);
 
   const group = useMemo(() => SessionManager.currentUserGroup(), [open]);
 
@@ -89,6 +90,7 @@ const DeleteConfirmation = () => {
     >
       <DialogContent>
         <Stack spacing={2}>
+          {teamSpace && <Alert severity="info">删除后保留 30 天，期间管理员可恢复，原图片直链继续有效。</Alert>}
           <StyledDialogContentText>
             {(singleFileToTrash || singleFilePermanently) && (
               <Trans

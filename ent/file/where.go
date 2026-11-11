@@ -55,6 +55,11 @@ func IDLTE(id int) predicate.File {
 	return predicate.File(sql.FieldLTE(FieldID, id))
 }
 
+// LecDeletedAt applies equality check predicate on the "lec_deleted_at" field. It's identical to LecDeletedAtEQ.
+func LecDeletedAt(v time.Time) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldLecDeletedAt, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.File {
 	return predicate.File(sql.FieldEQ(FieldCreatedAt, v))
@@ -103,6 +108,56 @@ func IsSymbolic(v bool) predicate.File {
 // StoragePolicyFiles applies equality check predicate on the "storage_policy_files" field. It's identical to StoragePolicyFilesEQ.
 func StoragePolicyFiles(v int) predicate.File {
 	return predicate.File(sql.FieldEQ(FieldStoragePolicyFiles, v))
+}
+
+// LecDeletedAtEQ applies the EQ predicate on the "lec_deleted_at" field.
+func LecDeletedAtEQ(v time.Time) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtNEQ applies the NEQ predicate on the "lec_deleted_at" field.
+func LecDeletedAtNEQ(v time.Time) predicate.File {
+	return predicate.File(sql.FieldNEQ(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtIn applies the In predicate on the "lec_deleted_at" field.
+func LecDeletedAtIn(vs ...time.Time) predicate.File {
+	return predicate.File(sql.FieldIn(FieldLecDeletedAt, vs...))
+}
+
+// LecDeletedAtNotIn applies the NotIn predicate on the "lec_deleted_at" field.
+func LecDeletedAtNotIn(vs ...time.Time) predicate.File {
+	return predicate.File(sql.FieldNotIn(FieldLecDeletedAt, vs...))
+}
+
+// LecDeletedAtGT applies the GT predicate on the "lec_deleted_at" field.
+func LecDeletedAtGT(v time.Time) predicate.File {
+	return predicate.File(sql.FieldGT(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtGTE applies the GTE predicate on the "lec_deleted_at" field.
+func LecDeletedAtGTE(v time.Time) predicate.File {
+	return predicate.File(sql.FieldGTE(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtLT applies the LT predicate on the "lec_deleted_at" field.
+func LecDeletedAtLT(v time.Time) predicate.File {
+	return predicate.File(sql.FieldLT(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtLTE applies the LTE predicate on the "lec_deleted_at" field.
+func LecDeletedAtLTE(v time.Time) predicate.File {
+	return predicate.File(sql.FieldLTE(FieldLecDeletedAt, v))
+}
+
+// LecDeletedAtIsNil applies the IsNil predicate on the "lec_deleted_at" field.
+func LecDeletedAtIsNil() predicate.File {
+	return predicate.File(sql.FieldIsNull(FieldLecDeletedAt))
+}
+
+// LecDeletedAtNotNil applies the NotNil predicate on the "lec_deleted_at" field.
+func LecDeletedAtNotNil() predicate.File {
+	return predicate.File(sql.FieldNotNull(FieldLecDeletedAt))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

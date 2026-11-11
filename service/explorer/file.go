@@ -123,6 +123,9 @@ func (s *GetDirectLinkService) Get(c *gin.Context) ([]DirectLinkResponse, error)
 func DeleteDirectLink(c *gin.Context) error {
 	dep := dependency.FromContext(c)
 	user := inventory.UserFromContext(c)
+	if inventory.IsLecTeamMember(user) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "团队直链随图片保留，不能单独删除", nil)
+	}
 	m := manager.NewFileManager(dep, user)
 	defer m.Recycle()
 

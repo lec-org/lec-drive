@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/cloudreve/Cloudreve/v4/ent"
+	"github.com/cloudreve/Cloudreve/v4/inventory"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
 	"github.com/cloudreve/Cloudreve/v4/pkg/cluster/routes"
 	"github.com/cloudreve/Cloudreve/v4/pkg/filemanager/driver"
@@ -353,6 +354,9 @@ func (l *manager) SetCurrentVersion(ctx context.Context, path *fs.URI, version i
 }
 
 func (l *manager) DeleteVersion(ctx context.Context, path *fs.URI, version int) error {
+	if inventory.IsLecTeamMember(l.actor) {
+		return serializer.NewError(serializer.CodeNoPermissionErr, "团队图片版本随文件一同保留，不支持单独删除", nil)
+	}
 	_, err := l.fs.VersionControl(ctx, path, version, true)
 	return err
 }

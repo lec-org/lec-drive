@@ -104,6 +104,26 @@ func (uu *UserUpdate) ClearLecSSOSubject() *UserUpdate {
 	return uu
 }
 
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (uu *UserUpdate) SetLecTeamOwnerID(i int) *UserUpdate {
+	uu.mutation.SetLecTeamOwnerID(i)
+	return uu
+}
+
+// SetNillableLecTeamOwnerID sets the "lec_team_owner_id" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLecTeamOwnerID(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetLecTeamOwnerID(*i)
+	}
+	return uu
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (uu *UserUpdate) ClearLecTeamOwnerID() *UserUpdate {
+	uu.mutation.ClearLecTeamOwnerID()
+	return uu
+}
+
 // SetEmail sets the "email" field.
 func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	uu.mutation.SetEmail(s)
@@ -253,6 +273,26 @@ func (uu *UserUpdate) SetNillableGroupUsers(i *int) *UserUpdate {
 	return uu
 }
 
+// SetLecTeamOwner sets the "lec_team_owner" edge to the User entity.
+func (uu *UserUpdate) SetLecTeamOwner(u *User) *UserUpdate {
+	return uu.SetLecTeamOwnerID(u.ID)
+}
+
+// AddLecTeamMemberIDs adds the "lec_team_members" edge to the User entity by IDs.
+func (uu *UserUpdate) AddLecTeamMemberIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddLecTeamMemberIDs(ids...)
+	return uu
+}
+
+// AddLecTeamMembers adds the "lec_team_members" edges to the User entity.
+func (uu *UserUpdate) AddLecTeamMembers(u ...*User) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddLecTeamMemberIDs(ids...)
+}
+
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (uu *UserUpdate) SetGroupID(id int) *UserUpdate {
 	uu.mutation.SetGroupID(id)
@@ -387,6 +427,33 @@ func (uu *UserUpdate) AddOauthGrants(o ...*OAuthGrant) *UserUpdate {
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
+}
+
+// ClearLecTeamOwner clears the "lec_team_owner" edge to the User entity.
+func (uu *UserUpdate) ClearLecTeamOwner() *UserUpdate {
+	uu.mutation.ClearLecTeamOwner()
+	return uu
+}
+
+// ClearLecTeamMembers clears all "lec_team_members" edges to the User entity.
+func (uu *UserUpdate) ClearLecTeamMembers() *UserUpdate {
+	uu.mutation.ClearLecTeamMembers()
+	return uu
+}
+
+// RemoveLecTeamMemberIDs removes the "lec_team_members" edge to User entities by IDs.
+func (uu *UserUpdate) RemoveLecTeamMemberIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveLecTeamMemberIDs(ids...)
+	return uu
+}
+
+// RemoveLecTeamMembers removes "lec_team_members" edges to User entities.
+func (uu *UserUpdate) RemoveLecTeamMembers(u ...*User) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveLecTeamMemberIDs(ids...)
 }
 
 // ClearGroup clears the "group" edge to the Group entity.
@@ -699,6 +766,80 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.SettingsCleared() {
 		_spec.ClearField(user.FieldSettings, field.TypeJSON)
+	}
+	if uu.mutation.LecTeamOwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.LecTeamOwnerTable,
+			Columns: []string{user.LecTeamOwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.LecTeamOwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.LecTeamOwnerTable,
+			Columns: []string{user.LecTeamOwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.LecTeamMembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedLecTeamMembersIDs(); len(nodes) > 0 && !uu.mutation.LecTeamMembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.LecTeamMembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uu.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1175,6 +1316,26 @@ func (uuo *UserUpdateOne) ClearLecSSOSubject() *UserUpdateOne {
 	return uuo
 }
 
+// SetLecTeamOwnerID sets the "lec_team_owner_id" field.
+func (uuo *UserUpdateOne) SetLecTeamOwnerID(i int) *UserUpdateOne {
+	uuo.mutation.SetLecTeamOwnerID(i)
+	return uuo
+}
+
+// SetNillableLecTeamOwnerID sets the "lec_team_owner_id" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLecTeamOwnerID(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetLecTeamOwnerID(*i)
+	}
+	return uuo
+}
+
+// ClearLecTeamOwnerID clears the value of the "lec_team_owner_id" field.
+func (uuo *UserUpdateOne) ClearLecTeamOwnerID() *UserUpdateOne {
+	uuo.mutation.ClearLecTeamOwnerID()
+	return uuo
+}
+
 // SetEmail sets the "email" field.
 func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	uuo.mutation.SetEmail(s)
@@ -1324,6 +1485,26 @@ func (uuo *UserUpdateOne) SetNillableGroupUsers(i *int) *UserUpdateOne {
 	return uuo
 }
 
+// SetLecTeamOwner sets the "lec_team_owner" edge to the User entity.
+func (uuo *UserUpdateOne) SetLecTeamOwner(u *User) *UserUpdateOne {
+	return uuo.SetLecTeamOwnerID(u.ID)
+}
+
+// AddLecTeamMemberIDs adds the "lec_team_members" edge to the User entity by IDs.
+func (uuo *UserUpdateOne) AddLecTeamMemberIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddLecTeamMemberIDs(ids...)
+	return uuo
+}
+
+// AddLecTeamMembers adds the "lec_team_members" edges to the User entity.
+func (uuo *UserUpdateOne) AddLecTeamMembers(u ...*User) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddLecTeamMemberIDs(ids...)
+}
+
 // SetGroupID sets the "group" edge to the Group entity by ID.
 func (uuo *UserUpdateOne) SetGroupID(id int) *UserUpdateOne {
 	uuo.mutation.SetGroupID(id)
@@ -1458,6 +1639,33 @@ func (uuo *UserUpdateOne) AddOauthGrants(o ...*OAuthGrant) *UserUpdateOne {
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
+}
+
+// ClearLecTeamOwner clears the "lec_team_owner" edge to the User entity.
+func (uuo *UserUpdateOne) ClearLecTeamOwner() *UserUpdateOne {
+	uuo.mutation.ClearLecTeamOwner()
+	return uuo
+}
+
+// ClearLecTeamMembers clears all "lec_team_members" edges to the User entity.
+func (uuo *UserUpdateOne) ClearLecTeamMembers() *UserUpdateOne {
+	uuo.mutation.ClearLecTeamMembers()
+	return uuo
+}
+
+// RemoveLecTeamMemberIDs removes the "lec_team_members" edge to User entities by IDs.
+func (uuo *UserUpdateOne) RemoveLecTeamMemberIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveLecTeamMemberIDs(ids...)
+	return uuo
+}
+
+// RemoveLecTeamMembers removes "lec_team_members" edges to User entities.
+func (uuo *UserUpdateOne) RemoveLecTeamMembers(u ...*User) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveLecTeamMemberIDs(ids...)
 }
 
 // ClearGroup clears the "group" edge to the Group entity.
@@ -1800,6 +2008,80 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.SettingsCleared() {
 		_spec.ClearField(user.FieldSettings, field.TypeJSON)
+	}
+	if uuo.mutation.LecTeamOwnerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.LecTeamOwnerTable,
+			Columns: []string{user.LecTeamOwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.LecTeamOwnerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   user.LecTeamOwnerTable,
+			Columns: []string{user.LecTeamOwnerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.LecTeamMembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedLecTeamMembersIDs(); len(nodes) > 0 && !uuo.mutation.LecTeamMembersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.LecTeamMembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LecTeamMembersTable,
+			Columns: []string{user.LecTeamMembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if uuo.mutation.GroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

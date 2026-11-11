@@ -548,12 +548,12 @@ func (fq *FileQuery) WithDirectLinks(opts ...func(*DirectLinkQuery)) *FileQuery 
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		LecDeletedAt time.Time `json:"lec_deleted_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.File.Query().
-//		GroupBy(file.FieldCreatedAt).
+//		GroupBy(file.FieldLecDeletedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (fq *FileQuery) GroupBy(field string, fields ...string) *FileGroupBy {
@@ -571,11 +571,11 @@ func (fq *FileQuery) GroupBy(field string, fields ...string) *FileGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		LecDeletedAt time.Time `json:"lec_deleted_at,omitempty"`
 //	}
 //
 //	client.File.Query().
-//		Select(file.FieldCreatedAt).
+//		Select(file.FieldLecDeletedAt).
 //		Scan(ctx, &v)
 func (fq *FileQuery) Select(fields ...string) *FileSelect {
 	fq.ctx.Fields = append(fq.ctx.Fields, fields...)

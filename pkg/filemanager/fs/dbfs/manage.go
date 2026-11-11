@@ -305,11 +305,15 @@ func (f *DBFS) SoftDelete(ctx context.Context, path ...*fs.URI) error {
 			return serializer.NewError(serializer.CodeDBError, "failed to soft-delete file", err)
 		}
 
+		retention := time.Duration(target.Owner().Edges.Group.Settings.TrashRetention) * time.Second
+		if inventory.IsLecTeamMember(target.Owner()) {
+			retention = inventory.LecTeamRetention
+		}
 		// Save restore uri into metadata
 		if err := fc.UpsertMetadata(ctx, target.Model, map[string]string{
 			MetadataRestoreUri: target.Uri(true).String(),
 			MetadataExpectedCollectTime: strconv.FormatInt(
-				time.Now().Add(time.Duration(target.Owner().Edges.Group.Settings.TrashRetention)*time.Second).Unix(),
+				time.Now().Add(retention).Unix(),
 				10),
 		}, nil); err != nil {
 			_ = inventory.Rollback(tx)
@@ -498,6 +502,13 @@ func (f *DBFS) Restore(ctx context.Context, path ...*fs.URI) error {
 			continue
 		}
 
+		if inventory.IsLecTeamMember(target.Owner()) {
+			deadline, err := inventory.TrashDeadline(target.Model)
+			if err != nil || !time.Now().Before(deadline) {
+				ae.Add(p.String(), fmt.Errorf("团队图片已超过 30 天恢复期限"))
+				continue
+			}
+		}
 		targets = append(targets, target)
 	}
 
@@ -585,6 +596,14 @@ func (f *DBFS) MoveOrCopy(ctx context.Context, path []*fs.URI, dst *fs.URI, isCo
 		if _, ok := ctx.Value(ByPassOwnerCheckCtxKey{}).(bool); !ok && target.Owner().ID != f.user.ID {
 			ae.Add(p.String(), fs.ErrOwnerOnly)
 			continue
+		}
+
+		if target.InTrashBin() && inventory.IsLecTeamMember(target.Owner()) {
+			deadline, err := inventory.TrashDeadline(target.Root().Model)
+			if err != nil || !time.Now().Before(deadline) {
+				ae.Add(p.String(), fmt.Errorf("团队图片已超过 30 天恢复期限"))
+				continue
+			}
 		}
 
 		// Root folder cannot be moved or copied
@@ -683,6 +702,7 @@ func (f *DBFS) MoveOrCopy(ctx context.Context, path []*fs.URI, dst *fs.URI, isCo
 }
 
 func (f *DBFS) GetFileFromDirectLink(ctx context.Context, dl *ent.DirectLink) (fs.File, error) {
+	ctx = context.WithValue(ctx, inventory.LoadFileMetadata{}, true)
 	fileModel, err := dl.Edges.FileOrErr()
 	if err != nil {
 		return nil, err
@@ -708,7 +728,14 @@ func (f *DBFS) GetFileFromDirectLink(ctx context.Context, dl *ent.DirectLink) (f
 	}
 
 	if root.Name() != inventory.RootFolderName {
-		return nil, serializer.NewError(serializer.CodeNotFound, "direct link not found", err)
+		if !inventory.IsLecTeamMember(owner) {
+			return nil, serializer.NewError(serializer.CodeNotFound, "direct link not found", nil)
+		}
+		// 删除目录时，目录内图片共同遵循该回收站根节点的保留期限。
+		deadline, deadlineErr := inventory.TrashDeadline(root.Model)
+		if deadlineErr != nil || !time.Now().Before(deadline) {
+			return nil, serializer.NewError(serializer.CodeNotFound, "direct link not found", nil)
+		}
 	}
 
 	return file, nil
@@ -997,6 +1024,9 @@ func (f *DBFS) moveFiles(ctx context.Context, targets []*File, destination *File
 			return storageDiff, nil, serializer.NewError(serializer.CodeDBError, "Failed to rename file from trash bin to its original name", err)
 		}
 
+		if _, err := fc.GetClient().File.UpdateOneID(file.ID()).ClearLecDeletedAt().Save(ctx); err != nil {
+			return nil, nil, err
+		}
 		// Remove trash bin metadata
 		if err := fc.RemoveMetadata(ctx, file.Model, MetadataRestoreUri, MetadataExpectedCollectTime); err != nil {
 			return storageDiff, nil, serializer.NewError(serializer.CodeDBError, "Failed to remove trash related metadata", err)

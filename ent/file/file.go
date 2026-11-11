@@ -15,6 +15,8 @@ const (
 	Label = "file"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldLecDeletedAt holds the string denoting the lec_deleted_at field in the database.
+	FieldLecDeletedAt = "lec_deleted_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -108,6 +110,7 @@ const (
 // Columns holds all SQL columns for file fields.
 var Columns = []string{
 	FieldID,
+	FieldLecDeletedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldType,
@@ -160,6 +163,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByLecDeletedAt orders the results by the lec_deleted_at field.
+func ByLecDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLecDeletedAt, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

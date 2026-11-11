@@ -123,6 +123,7 @@ export const useBreadcrumbButtons = ({
               }
             }
           }
+          if (SessionManager.currentUser()?.team_space) return "团队空间";
           if (uri.id()) {
             const current = SessionManager.currentLoginOrNull();
             if (!current || current.user.id != uri.id()) {

@@ -79,6 +79,9 @@ func SetUserCtx(c *gin.Context, uid int) error {
 	if err != nil {
 		return serializer.NewError(serializer.CodeDBError, "failed to get login user", err)
 	}
+	if loginUser.LecSSOSubject != nil && loginUser.LecTeamOwnerID == nil {
+		return serializer.NewError(serializer.CodeCheckLogin, "请重新统一登录以初始化团队空间", nil)
+	}
 
 	SetUserCtxByUser(c, loginUser)
 	return nil
