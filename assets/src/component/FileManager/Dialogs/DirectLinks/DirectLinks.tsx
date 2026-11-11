@@ -31,25 +31,12 @@ const DirectLinks = () => {
 
   const [viewMode, setViewMode] = useState<ViewMode>("list");
   const [showFileName, setShowFileName] = useState(false);
-  const [forceDownload, setForceDownload] = useState(false);
   const [copiedAll, setCopiedAll] = useState(false);
 
   const open = useAppSelector((state) => state.globalState.directLinkDialogOpen);
   const targets = useAppSelector((state) => state.globalState.directLinkRes);
 
   const relativePathPlaceholder = t("application:modals.relativePathPlaceholder");
-
-  const getDisplayLink = useCallback(
-    (link: string) => {
-      if (forceDownload) {
-        const url = new URL(link);
-        url.searchParams.set("download", "1");
-        return url.toString();
-      }
-      return link;
-    },
-    [forceDownload],
-  );
 
   const getDisplayName = useCallback((fileUrl: string) => {
     const crUri = new CrUri(fileUrl);
@@ -61,12 +48,12 @@ const DirectLinks = () => {
     if (!targets) return "";
     return targets
       .map((target) => {
-        const finalLink = getDisplayLink(target.link);
+        const finalLink = target.link;
         if (!showFileName) return `${finalLink}`;
         return `[${getDisplayName(target.file_url)}] ${finalLink}`;
       })
       .join("\n");
-  }, [targets, showFileName, getDisplayLink, getDisplayName, relativePathPlaceholder]);
+  }, [targets, showFileName, getDisplayName, relativePathPlaceholder]);
 
   const onClose = useCallback(() => {
     dispatch(closeDirectLinkDialog());
@@ -100,21 +87,6 @@ const DirectLinks = () => {
             }
             label={t("application:modals.showFileName")}
           />
-          <FormControlLabel
-            sx={{ ml: 0 }}
-            slotProps={{
-              typography: { variant: "body2", pl: 1, color: "text.secondary" },
-            }}
-            control={
-              <StyledCheckbox
-                onChange={() => setForceDownload(!forceDownload)}
-                disableRipple
-                checked={forceDownload}
-                size="small"
-              />
-            }
-            label={t("application:modals.forceDownload")}
-          />
         </Stack>
       }
       dialogProps={{
@@ -142,7 +114,6 @@ const DirectLinks = () => {
           <DirectLinkList
             targets={targets}
             showFileName={showFileName}
-            getDisplayLink={getDisplayLink}
             getDisplayName={getDisplayName}
             relativePathPlaceholder={relativePathPlaceholder}
           />
@@ -167,18 +138,11 @@ const DirectLinks = () => {
 interface DirectLinkListProps {
   targets?: DirectLink[];
   showFileName: boolean;
-  getDisplayLink: (link: string) => string;
   getDisplayName: (fileUrl: string) => string;
   relativePathPlaceholder: string;
 }
 
-const DirectLinkList = ({
-  targets,
-  showFileName,
-  getDisplayLink,
-  getDisplayName,
-  relativePathPlaceholder,
-}: DirectLinkListProps) => {
+const DirectLinkList = ({ targets, showFileName, getDisplayName, relativePathPlaceholder }: DirectLinkListProps) => {
   return (
     <Box sx={{ maxHeight: 400, overflow: "auto" }}>
       <Stack spacing={0.5}>
@@ -188,7 +152,7 @@ const DirectLinkList = ({
             target={target}
             showDisplayName={showFileName}
             index={index}
-            displayLink={getDisplayLink(target.link)}
+            displayLink={target.link}
             displayName={getDisplayName(target.file_url)}
             relativePathPlaceholder={relativePathPlaceholder}
           />
