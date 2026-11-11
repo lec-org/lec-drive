@@ -15060,6 +15060,8 @@ type UserMutation struct {
 	created_at          *time.Time
 	updated_at          *time.Time
 	deleted_at          *time.Time
+	lec_sso_issuer      *string
+	lec_sso_subject     *string
 	email               *string
 	nick                *string
 	password            *string
@@ -15318,6 +15320,104 @@ func (m *UserMutation) DeletedAtCleared() bool {
 func (m *UserMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, user.FieldDeletedAt)
+}
+
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (m *UserMutation) SetLecSSOIssuer(s string) {
+	m.lec_sso_issuer = &s
+}
+
+// LecSSOIssuer returns the value of the "lec_sso_issuer" field in the mutation.
+func (m *UserMutation) LecSSOIssuer() (r string, exists bool) {
+	v := m.lec_sso_issuer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLecSSOIssuer returns the old "lec_sso_issuer" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLecSSOIssuer(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLecSSOIssuer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLecSSOIssuer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLecSSOIssuer: %w", err)
+	}
+	return oldValue.LecSSOIssuer, nil
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (m *UserMutation) ClearLecSSOIssuer() {
+	m.lec_sso_issuer = nil
+	m.clearedFields[user.FieldLecSSOIssuer] = struct{}{}
+}
+
+// LecSSOIssuerCleared returns if the "lec_sso_issuer" field was cleared in this mutation.
+func (m *UserMutation) LecSSOIssuerCleared() bool {
+	_, ok := m.clearedFields[user.FieldLecSSOIssuer]
+	return ok
+}
+
+// ResetLecSSOIssuer resets all changes to the "lec_sso_issuer" field.
+func (m *UserMutation) ResetLecSSOIssuer() {
+	m.lec_sso_issuer = nil
+	delete(m.clearedFields, user.FieldLecSSOIssuer)
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (m *UserMutation) SetLecSSOSubject(s string) {
+	m.lec_sso_subject = &s
+}
+
+// LecSSOSubject returns the value of the "lec_sso_subject" field in the mutation.
+func (m *UserMutation) LecSSOSubject() (r string, exists bool) {
+	v := m.lec_sso_subject
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLecSSOSubject returns the old "lec_sso_subject" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLecSSOSubject(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLecSSOSubject is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLecSSOSubject requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLecSSOSubject: %w", err)
+	}
+	return oldValue.LecSSOSubject, nil
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (m *UserMutation) ClearLecSSOSubject() {
+	m.lec_sso_subject = nil
+	m.clearedFields[user.FieldLecSSOSubject] = struct{}{}
+}
+
+// LecSSOSubjectCleared returns if the "lec_sso_subject" field was cleared in this mutation.
+func (m *UserMutation) LecSSOSubjectCleared() bool {
+	_, ok := m.clearedFields[user.FieldLecSSOSubject]
+	return ok
+}
+
+// ResetLecSSOSubject resets all changes to the "lec_sso_subject" field.
+func (m *UserMutation) ResetLecSSOSubject() {
+	m.lec_sso_subject = nil
+	delete(m.clearedFields, user.FieldLecSSOSubject)
 }
 
 // SetEmail sets the "email" field.
@@ -16222,7 +16322,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
 	}
@@ -16231,6 +16331,12 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, user.FieldDeletedAt)
+	}
+	if m.lec_sso_issuer != nil {
+		fields = append(fields, user.FieldLecSSOIssuer)
+	}
+	if m.lec_sso_subject != nil {
+		fields = append(fields, user.FieldLecSSOSubject)
 	}
 	if m.email != nil {
 		fields = append(fields, user.FieldEmail)
@@ -16273,6 +16379,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case user.FieldDeletedAt:
 		return m.DeletedAt()
+	case user.FieldLecSSOIssuer:
+		return m.LecSSOIssuer()
+	case user.FieldLecSSOSubject:
+		return m.LecSSOSubject()
 	case user.FieldEmail:
 		return m.Email()
 	case user.FieldNick:
@@ -16306,6 +16416,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case user.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case user.FieldLecSSOIssuer:
+		return m.OldLecSSOIssuer(ctx)
+	case user.FieldLecSSOSubject:
+		return m.OldLecSSOSubject(ctx)
 	case user.FieldEmail:
 		return m.OldEmail(ctx)
 	case user.FieldNick:
@@ -16353,6 +16467,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case user.FieldLecSSOIssuer:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLecSSOIssuer(v)
+		return nil
+	case user.FieldLecSSOSubject:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLecSSOSubject(v)
 		return nil
 	case user.FieldEmail:
 		v, ok := value.(string)
@@ -16465,6 +16593,12 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldDeletedAt) {
 		fields = append(fields, user.FieldDeletedAt)
 	}
+	if m.FieldCleared(user.FieldLecSSOIssuer) {
+		fields = append(fields, user.FieldLecSSOIssuer)
+	}
+	if m.FieldCleared(user.FieldLecSSOSubject) {
+		fields = append(fields, user.FieldLecSSOSubject)
+	}
 	if m.FieldCleared(user.FieldPassword) {
 		fields = append(fields, user.FieldPassword)
 	}
@@ -16494,6 +16628,12 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case user.FieldLecSSOIssuer:
+		m.ClearLecSSOIssuer()
+		return nil
+	case user.FieldLecSSOSubject:
+		m.ClearLecSSOSubject()
+		return nil
 	case user.FieldPassword:
 		m.ClearPassword()
 		return nil
@@ -16522,6 +16662,12 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case user.FieldLecSSOIssuer:
+		m.ResetLecSSOIssuer()
+		return nil
+	case user.FieldLecSSOSubject:
+		m.ResetLecSSOSubject()
 		return nil
 	case user.FieldEmail:
 		m.ResetEmail()

@@ -477,6 +477,8 @@ var (
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "lec_sso_issuer", Type: field.TypeString, Nullable: true},
+		{Name: "lec_sso_subject", Type: field.TypeString, Nullable: true},
 		{Name: "email", Type: field.TypeString, Unique: true, Size: 100},
 		{Name: "nick", Type: field.TypeString, Size: 100},
 		{Name: "password", Type: field.TypeString, Nullable: true},
@@ -495,9 +497,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_groups_users",
-				Columns:    []*schema.Column{UsersColumns[12]},
+				Columns:    []*schema.Column{UsersColumns[14]},
 				RefColumns: []*schema.Column{GroupsColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "user_lec_sso_issuer_lec_sso_subject",
+				Unique:  true,
+				Columns: []*schema.Column{UsersColumns[4], UsersColumns[5]},
 			},
 		},
 	}

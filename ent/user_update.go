@@ -64,6 +64,46 @@ func (uu *UserUpdate) ClearDeletedAt() *UserUpdate {
 	return uu
 }
 
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (uu *UserUpdate) SetLecSSOIssuer(s string) *UserUpdate {
+	uu.mutation.SetLecSSOIssuer(s)
+	return uu
+}
+
+// SetNillableLecSSOIssuer sets the "lec_sso_issuer" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLecSSOIssuer(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLecSSOIssuer(*s)
+	}
+	return uu
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (uu *UserUpdate) ClearLecSSOIssuer() *UserUpdate {
+	uu.mutation.ClearLecSSOIssuer()
+	return uu
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (uu *UserUpdate) SetLecSSOSubject(s string) *UserUpdate {
+	uu.mutation.SetLecSSOSubject(s)
+	return uu
+}
+
+// SetNillableLecSSOSubject sets the "lec_sso_subject" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLecSSOSubject(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLecSSOSubject(*s)
+	}
+	return uu
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (uu *UserUpdate) ClearLecSSOSubject() *UserUpdate {
+	uu.mutation.ClearLecSSOSubject()
+	return uu
+}
+
 // SetEmail sets the "email" field.
 func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	uu.mutation.SetEmail(s)
@@ -609,6 +649,18 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if uu.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
 	}
+	if value, ok := uu.mutation.LecSSOIssuer(); ok {
+		_spec.SetField(user.FieldLecSSOIssuer, field.TypeString, value)
+	}
+	if uu.mutation.LecSSOIssuerCleared() {
+		_spec.ClearField(user.FieldLecSSOIssuer, field.TypeString)
+	}
+	if value, ok := uu.mutation.LecSSOSubject(); ok {
+		_spec.SetField(user.FieldLecSSOSubject, field.TypeString, value)
+	}
+	if uu.mutation.LecSSOSubjectCleared() {
+		_spec.ClearField(user.FieldLecSSOSubject, field.TypeString)
+	}
 	if value, ok := uu.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 	}
@@ -1080,6 +1132,46 @@ func (uuo *UserUpdateOne) SetNillableDeletedAt(t *time.Time) *UserUpdateOne {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (uuo *UserUpdateOne) ClearDeletedAt() *UserUpdateOne {
 	uuo.mutation.ClearDeletedAt()
+	return uuo
+}
+
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (uuo *UserUpdateOne) SetLecSSOIssuer(s string) *UserUpdateOne {
+	uuo.mutation.SetLecSSOIssuer(s)
+	return uuo
+}
+
+// SetNillableLecSSOIssuer sets the "lec_sso_issuer" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLecSSOIssuer(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLecSSOIssuer(*s)
+	}
+	return uuo
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (uuo *UserUpdateOne) ClearLecSSOIssuer() *UserUpdateOne {
+	uuo.mutation.ClearLecSSOIssuer()
+	return uuo
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (uuo *UserUpdateOne) SetLecSSOSubject(s string) *UserUpdateOne {
+	uuo.mutation.SetLecSSOSubject(s)
+	return uuo
+}
+
+// SetNillableLecSSOSubject sets the "lec_sso_subject" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLecSSOSubject(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLecSSOSubject(*s)
+	}
+	return uuo
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (uuo *UserUpdateOne) ClearLecSSOSubject() *UserUpdateOne {
+	uuo.mutation.ClearLecSSOSubject()
 	return uuo
 }
 
@@ -1657,6 +1749,18 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(user.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := uuo.mutation.LecSSOIssuer(); ok {
+		_spec.SetField(user.FieldLecSSOIssuer, field.TypeString, value)
+	}
+	if uuo.mutation.LecSSOIssuerCleared() {
+		_spec.ClearField(user.FieldLecSSOIssuer, field.TypeString)
+	}
+	if value, ok := uuo.mutation.LecSSOSubject(); ok {
+		_spec.SetField(user.FieldLecSSOSubject, field.TypeString, value)
+	}
+	if uuo.mutation.LecSSOSubjectCleared() {
+		_spec.ClearField(user.FieldLecSSOSubject, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)

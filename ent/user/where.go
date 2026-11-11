@@ -70,6 +70,16 @@ func DeletedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldDeletedAt, v))
 }
 
+// LecSSOIssuer applies equality check predicate on the "lec_sso_issuer" field. It's identical to LecSSOIssuerEQ.
+func LecSSOIssuer(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecSSOIssuer, v))
+}
+
+// LecSSOSubject applies equality check predicate on the "lec_sso_subject" field. It's identical to LecSSOSubjectEQ.
+func LecSSOSubject(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecSSOSubject, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldEmail, v))
@@ -233,6 +243,156 @@ func DeletedAtIsNil() predicate.User {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// LecSSOIssuerEQ applies the EQ predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerNEQ applies the NEQ predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerIn applies the In predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLecSSOIssuer, vs...))
+}
+
+// LecSSOIssuerNotIn applies the NotIn predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLecSSOIssuer, vs...))
+}
+
+// LecSSOIssuerGT applies the GT predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerGTE applies the GTE predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerLT applies the LT predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerLTE applies the LTE predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerContains applies the Contains predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerHasPrefix applies the HasPrefix predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerHasSuffix applies the HasSuffix predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerIsNil applies the IsNil predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLecSSOIssuer))
+}
+
+// LecSSOIssuerNotNil applies the NotNil predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLecSSOIssuer))
+}
+
+// LecSSOIssuerEqualFold applies the EqualFold predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldLecSSOIssuer, v))
+}
+
+// LecSSOIssuerContainsFold applies the ContainsFold predicate on the "lec_sso_issuer" field.
+func LecSSOIssuerContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldLecSSOIssuer, v))
+}
+
+// LecSSOSubjectEQ applies the EQ predicate on the "lec_sso_subject" field.
+func LecSSOSubjectEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectNEQ applies the NEQ predicate on the "lec_sso_subject" field.
+func LecSSOSubjectNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectIn applies the In predicate on the "lec_sso_subject" field.
+func LecSSOSubjectIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLecSSOSubject, vs...))
+}
+
+// LecSSOSubjectNotIn applies the NotIn predicate on the "lec_sso_subject" field.
+func LecSSOSubjectNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLecSSOSubject, vs...))
+}
+
+// LecSSOSubjectGT applies the GT predicate on the "lec_sso_subject" field.
+func LecSSOSubjectGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectGTE applies the GTE predicate on the "lec_sso_subject" field.
+func LecSSOSubjectGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectLT applies the LT predicate on the "lec_sso_subject" field.
+func LecSSOSubjectLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectLTE applies the LTE predicate on the "lec_sso_subject" field.
+func LecSSOSubjectLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectContains applies the Contains predicate on the "lec_sso_subject" field.
+func LecSSOSubjectContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectHasPrefix applies the HasPrefix predicate on the "lec_sso_subject" field.
+func LecSSOSubjectHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectHasSuffix applies the HasSuffix predicate on the "lec_sso_subject" field.
+func LecSSOSubjectHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectIsNil applies the IsNil predicate on the "lec_sso_subject" field.
+func LecSSOSubjectIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLecSSOSubject))
+}
+
+// LecSSOSubjectNotNil applies the NotNil predicate on the "lec_sso_subject" field.
+func LecSSOSubjectNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLecSSOSubject))
+}
+
+// LecSSOSubjectEqualFold applies the EqualFold predicate on the "lec_sso_subject" field.
+func LecSSOSubjectEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldLecSSOSubject, v))
+}
+
+// LecSSOSubjectContainsFold applies the ContainsFold predicate on the "lec_sso_subject" field.
+func LecSSOSubjectContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldLecSSOSubject, v))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.

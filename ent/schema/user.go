@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
 )
 
@@ -14,6 +15,9 @@ type User struct {
 
 func (User) Fields() []ent.Field {
 	return []ent.Field{
+		// 独立保存外部身份，避免按邮箱合并导致账号被错误关联。
+		field.String("lec_sso_issuer").Optional().Nillable(),
+		field.String("lec_sso_subject").Optional().Nillable(),
 		field.String("email").
 			MaxLen(100).
 			Unique(),
@@ -37,6 +41,10 @@ func (User) Fields() []ent.Field {
 			Optional(),
 		field.Int("group_users"),
 	}
+}
+
+func (User) Indexes() []ent.Index {
+	return []ent.Index{index.Fields("lec_sso_issuer", "lec_sso_subject").Unique()}
 }
 
 func (User) Edges() []ent.Edge {

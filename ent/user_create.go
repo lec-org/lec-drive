@@ -74,6 +74,34 @@ func (uc *UserCreate) SetNillableDeletedAt(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (uc *UserCreate) SetLecSSOIssuer(s string) *UserCreate {
+	uc.mutation.SetLecSSOIssuer(s)
+	return uc
+}
+
+// SetNillableLecSSOIssuer sets the "lec_sso_issuer" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLecSSOIssuer(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLecSSOIssuer(*s)
+	}
+	return uc
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (uc *UserCreate) SetLecSSOSubject(s string) *UserCreate {
+	uc.mutation.SetLecSSOSubject(s)
+	return uc
+}
+
+// SetNillableLecSSOSubject sets the "lec_sso_subject" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLecSSOSubject(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLecSSOSubject(*s)
+	}
+	return uc
+}
+
 // SetEmail sets the "email" field.
 func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	uc.mutation.SetEmail(s)
@@ -452,6 +480,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
+	if value, ok := uc.mutation.LecSSOIssuer(); ok {
+		_spec.SetField(user.FieldLecSSOIssuer, field.TypeString, value)
+		_node.LecSSOIssuer = &value
+	}
+	if value, ok := uc.mutation.LecSSOSubject(); ok {
+		_spec.SetField(user.FieldLecSSOSubject, field.TypeString, value)
+		_node.LecSSOSubject = &value
+	}
 	if value, ok := uc.mutation.Email(); ok {
 		_spec.SetField(user.FieldEmail, field.TypeString, value)
 		_node.Email = value
@@ -711,6 +747,42 @@ func (u *UserUpsert) ClearDeletedAt() *UserUpsert {
 	return u
 }
 
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (u *UserUpsert) SetLecSSOIssuer(v string) *UserUpsert {
+	u.Set(user.FieldLecSSOIssuer, v)
+	return u
+}
+
+// UpdateLecSSOIssuer sets the "lec_sso_issuer" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLecSSOIssuer() *UserUpsert {
+	u.SetExcluded(user.FieldLecSSOIssuer)
+	return u
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (u *UserUpsert) ClearLecSSOIssuer() *UserUpsert {
+	u.SetNull(user.FieldLecSSOIssuer)
+	return u
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (u *UserUpsert) SetLecSSOSubject(v string) *UserUpsert {
+	u.Set(user.FieldLecSSOSubject, v)
+	return u
+}
+
+// UpdateLecSSOSubject sets the "lec_sso_subject" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLecSSOSubject() *UserUpsert {
+	u.SetExcluded(user.FieldLecSSOSubject)
+	return u
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (u *UserUpsert) ClearLecSSOSubject() *UserUpsert {
+	u.SetNull(user.FieldLecSSOSubject)
+	return u
+}
+
 // SetEmail sets the "email" field.
 func (u *UserUpsert) SetEmail(v string) *UserUpsert {
 	u.Set(user.FieldEmail, v)
@@ -926,6 +998,48 @@ func (u *UserUpsertOne) UpdateDeletedAt() *UserUpsertOne {
 func (u *UserUpsertOne) ClearDeletedAt() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (u *UserUpsertOne) SetLecSSOIssuer(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecSSOIssuer(v)
+	})
+}
+
+// UpdateLecSSOIssuer sets the "lec_sso_issuer" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLecSSOIssuer() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecSSOIssuer()
+	})
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (u *UserUpsertOne) ClearLecSSOIssuer() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecSSOIssuer()
+	})
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (u *UserUpsertOne) SetLecSSOSubject(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecSSOSubject(v)
+	})
+}
+
+// UpdateLecSSOSubject sets the "lec_sso_subject" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLecSSOSubject() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecSSOSubject()
+	})
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (u *UserUpsertOne) ClearLecSSOSubject() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecSSOSubject()
 	})
 }
 
@@ -1338,6 +1452,48 @@ func (u *UserUpsertBulk) UpdateDeletedAt() *UserUpsertBulk {
 func (u *UserUpsertBulk) ClearDeletedAt() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetLecSSOIssuer sets the "lec_sso_issuer" field.
+func (u *UserUpsertBulk) SetLecSSOIssuer(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecSSOIssuer(v)
+	})
+}
+
+// UpdateLecSSOIssuer sets the "lec_sso_issuer" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLecSSOIssuer() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecSSOIssuer()
+	})
+}
+
+// ClearLecSSOIssuer clears the value of the "lec_sso_issuer" field.
+func (u *UserUpsertBulk) ClearLecSSOIssuer() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecSSOIssuer()
+	})
+}
+
+// SetLecSSOSubject sets the "lec_sso_subject" field.
+func (u *UserUpsertBulk) SetLecSSOSubject(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetLecSSOSubject(v)
+	})
+}
+
+// UpdateLecSSOSubject sets the "lec_sso_subject" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLecSSOSubject() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateLecSSOSubject()
+	})
+}
+
+// ClearLecSSOSubject clears the value of the "lec_sso_subject" field.
+func (u *UserUpsertBulk) ClearLecSSOSubject() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearLecSSOSubject()
 	})
 }
 

@@ -7,6 +7,7 @@ import (
 	"github.com/cloudreve/Cloudreve/v4/application/dependency"
 	"github.com/cloudreve/Cloudreve/v4/inventory"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
+	"github.com/cloudreve/Cloudreve/v4/pkg/lecsso"
 	"github.com/cloudreve/Cloudreve/v4/pkg/setting"
 	"github.com/cloudreve/Cloudreve/v4/pkg/thumb"
 	"github.com/cloudreve/Cloudreve/v4/service/user"
@@ -39,6 +40,7 @@ type SiteConfig struct {
 	CapSiteKey       string              `json:"captcha_cap_site_key,omitempty"`
 	CapAssetServer   string              `json:"captcha_cap_asset_server,omitempty"`
 	RegisterEnabled  bool                `json:"register_enabled,omitempty"`
+	LecSSOEnabled    bool                `json:"lec_sso_enabled,omitempty"`
 	TosUrl           string              `json:"tos_url,omitempty"`
 	PrivacyPolicyUrl string              `json:"privacy_policy_url,omitempty"`
 
@@ -90,6 +92,7 @@ func (s *GetSettingService) GetSiteConfig(c *gin.Context) (*SiteConfig, error) {
 	case "login":
 		legalDocs := settings.LegalDocuments(c)
 		return &SiteConfig{
+			LecSSOEnabled:    lecsso.Enabled(),
 			LoginCaptcha:     settings.LoginCaptchaEnabled(c),
 			RegCaptcha:       settings.RegCaptchaEnabled(c),
 			ForgetCaptcha:    settings.ForgotPasswordCaptchaEnabled(c),

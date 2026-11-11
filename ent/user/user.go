@@ -23,6 +23,10 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldLecSSOIssuer holds the string denoting the lec_sso_issuer field in the database.
+	FieldLecSSOIssuer = "lec_sso_issuer"
+	// FieldLecSSOSubject holds the string denoting the lec_sso_subject field in the database.
+	FieldLecSSOSubject = "lec_sso_subject"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldNick holds the string denoting the nick field in the database.
@@ -132,6 +136,8 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldLecSSOIssuer,
+	FieldLecSSOSubject,
 	FieldEmail,
 	FieldNick,
 	FieldPassword,
@@ -226,6 +232,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDeletedAt orders the results by the deleted_at field.
 func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByLecSSOIssuer orders the results by the lec_sso_issuer field.
+func ByLecSSOIssuer(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLecSSOIssuer, opts...).ToFunc()
+}
+
+// ByLecSSOSubject orders the results by the lec_sso_subject field.
+func ByLecSSOSubject(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLecSSOSubject, opts...).ToFunc()
 }
 
 // ByEmail orders the results by the email field.

@@ -161,9 +161,14 @@ func BuildWebAuthnList(credentials []webauthn.Credential) []WebAuthnCredentials 
 
 // BuildUser 序列化用户
 func BuildUser(user *ent.User, idEncoder hashid.Encoder) User {
+	email := user.Email
+	// 外部身份账号使用内部唯一标识占位，不把占位地址展示成用户真实邮箱。
+	if user.LecSSOSubject != nil {
+		email = ""
+	}
 	return User{
 		ID:                  hashid.EncodeUserID(idEncoder, user.ID),
-		Email:               user.Email,
+		Email:               email,
 		Nickname:            user.Nick,
 		Status:              user.Status,
 		Avatar:              user.Avatar,

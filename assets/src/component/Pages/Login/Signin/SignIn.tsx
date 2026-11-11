@@ -509,11 +509,22 @@ const EmailLogin = ({ oauthConsent }: SignInProps) => {
 const SignIn = ({ oauthConsent }: SignInProps) => {
   const { t } = useTranslation();
   const isOAuthFlow = !!oauthConsent;
+  const lecSSOEnabled = useAppSelector((state) => state.siteConfig.login.config.lec_sso_enabled);
 
   return (
     <Box>
       <PageTitle title={isOAuthFlow ? t("oauth.authorize") : t("login.signIn")} />
-      <EmailLogin oauthConsent={oauthConsent} />
+      {lecSSOEnabled && !isOAuthFlow ? (
+        <Box sx={{ display: "grid", gap: 2 }}>
+          <Typography variant="h6">登录 LecDrive</Typography>
+          <Typography color="text.secondary">使用 LEC 工作室统一账号访问个人图片空间。</Typography>
+          <Button variant="contained" href="/api/v4/session/lec-sso">
+            使用 LecSSO 登录
+          </Button>
+        </Box>
+      ) : (
+        <EmailLogin oauthConsent={oauthConsent} />
+      )}
     </Box>
   );
 };

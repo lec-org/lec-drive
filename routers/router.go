@@ -283,6 +283,8 @@ func initMasterRouter(dep dependency.Dep) *gin.Engine {
 		// User authentication
 		session := v4.Group("session")
 		{
+			session.GET("lec-sso", usersvc.LecSSOLogin)
+			session.POST("lec-sso/complete", usersvc.LecSSOComplete)
 			token := session.Group("token")
 			// Token based authentication
 			{
