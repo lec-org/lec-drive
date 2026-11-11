@@ -2,6 +2,7 @@ import react from "@vitejs/plugin-react-swc";
 import { promises as fs } from "fs";
 import { resolve } from "path";
 import { defineConfig } from "vite";
+import packageJson from "./package.json";
 // import mkcert from "vite-plugin-mkcert";
 import { VitePWA } from "vite-plugin-pwa";
 import { viteStaticCopy } from "vite-plugin-static-copy";
@@ -20,7 +21,13 @@ export default defineConfig({
       workbox: {
         globIgnores: ["**/*leaflet*", "**/*mapbox*", "**/*Leaflet*", "**/*Mapbox*"],
         maximumFileSizeToCacheInBytes: 10000000,
-        navigateFallbackDenylist: [/^\/pdfviewer.html/, /^\/api\/(.+)/, /^\/f\/(.+)/, /^\/s\/(.+)/],
+        navigateFallbackDenylist: [
+          /^\/pdfviewer.html/,
+          /^\/api\/(.+)/,
+          /^\/(?:f|s)\/(.+)/,
+          // 可读图片链接必须交给后端，不能被离线首页替代。
+          /^\/(?!(?:api|admin|assets|static|locales|session|home|callback|profile|settings|tasks|downloads|shares|connect|dav|f|s)(?:\/|$))[A-Za-z0-9_]+\/.+/,
+        ],
       },
       devOptions: {
         enabled: true,
@@ -47,8 +54,8 @@ export default defineConfig({
       name: "generate-version",
       async writeBundle(outputOptions) {
         const version = {
-          name: process.env.npm_package_name,
-          version: process.env.npm_package_version,
+          name: packageJson.name,
+          version: packageJson.version,
         };
         const path = resolve(__dirname, outputOptions.dir, "version.json");
         await fs.writeFile(path, JSON.stringify(version));
@@ -59,7 +66,7 @@ export default defineConfig({
     // }),
   ],
   define: {
-    __ASSETS_VERSION__: JSON.stringify(process.env.npm_package_version),
+    __ASSETS_VERSION__: JSON.stringify(packageJson.version),
   },
   build: {
     outDir: "build", // keep same as v3 with minimal changes
