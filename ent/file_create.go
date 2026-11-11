@@ -29,6 +29,20 @@ type FileCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetLecURLName sets the "lec_url_name" field.
+func (fc *FileCreate) SetLecURLName(s string) *FileCreate {
+	fc.mutation.SetLecURLName(s)
+	return fc
+}
+
+// SetNillableLecURLName sets the "lec_url_name" field if the given value is not nil.
+func (fc *FileCreate) SetNillableLecURLName(s *string) *FileCreate {
+	if s != nil {
+		fc.SetLecURLName(*s)
+	}
+	return fc
+}
+
 // SetLecDeletedAt sets the "lec_deleted_at" field.
 func (fc *FileCreate) SetLecDeletedAt(t time.Time) *FileCreate {
 	fc.mutation.SetLecDeletedAt(t)
@@ -347,6 +361,11 @@ func (fc *FileCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (fc *FileCreate) check() error {
+	if v, ok := fc.mutation.LecURLName(); ok {
+		if err := file.LecURLNameValidator(v); err != nil {
+			return &ValidationError{Name: "lec_url_name", err: fmt.Errorf(`ent: validator failed for field "File.lec_url_name": %w`, err)}
+		}
+	}
 	if _, ok := fc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "File.created_at"`)}
 	}
@@ -405,6 +424,10 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 	}
 
 	_spec.OnConflict = fc.conflict
+	if value, ok := fc.mutation.LecURLName(); ok {
+		_spec.SetField(file.FieldLecURLName, field.TypeString, value)
+		_node.LecURLName = &value
+	}
 	if value, ok := fc.mutation.LecDeletedAt(); ok {
 		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)
 		_node.LecDeletedAt = &value
@@ -579,7 +602,7 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.File.Create().
-//		SetLecDeletedAt(v).
+//		SetLecURLName(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -588,7 +611,7 @@ func (fc *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.FileUpsert) {
-//			SetLecDeletedAt(v+v).
+//			SetLecURLName(v+v).
 //		}).
 //		Exec(ctx)
 func (fc *FileCreate) OnConflict(opts ...sql.ConflictOption) *FileUpsertOne {
@@ -623,6 +646,24 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetLecURLName sets the "lec_url_name" field.
+func (u *FileUpsert) SetLecURLName(v string) *FileUpsert {
+	u.Set(file.FieldLecURLName, v)
+	return u
+}
+
+// UpdateLecURLName sets the "lec_url_name" field to the value that was provided on create.
+func (u *FileUpsert) UpdateLecURLName() *FileUpsert {
+	u.SetExcluded(file.FieldLecURLName)
+	return u
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (u *FileUpsert) ClearLecURLName() *FileUpsert {
+	u.SetNull(file.FieldLecURLName)
+	return u
+}
 
 // SetLecDeletedAt sets the "lec_deleted_at" field.
 func (u *FileUpsert) SetLecDeletedAt(v time.Time) *FileUpsert {
@@ -847,6 +888,27 @@ func (u *FileUpsertOne) Update(set func(*FileUpsert)) *FileUpsertOne {
 		set(&FileUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetLecURLName sets the "lec_url_name" field.
+func (u *FileUpsertOne) SetLecURLName(v string) *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.SetLecURLName(v)
+	})
+}
+
+// UpdateLecURLName sets the "lec_url_name" field to the value that was provided on create.
+func (u *FileUpsertOne) UpdateLecURLName() *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.UpdateLecURLName()
+	})
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (u *FileUpsertOne) ClearLecURLName() *FileUpsertOne {
+	return u.Update(func(s *FileUpsert) {
+		s.ClearLecURLName()
+	})
 }
 
 // SetLecDeletedAt sets the "lec_deleted_at" field.
@@ -1199,7 +1261,7 @@ func (fcb *FileCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.FileUpsert) {
-//			SetLecDeletedAt(v+v).
+//			SetLecURLName(v+v).
 //		}).
 //		Exec(ctx)
 func (fcb *FileCreateBulk) OnConflict(opts ...sql.ConflictOption) *FileUpsertBulk {
@@ -1273,6 +1335,27 @@ func (u *FileUpsertBulk) Update(set func(*FileUpsert)) *FileUpsertBulk {
 		set(&FileUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetLecURLName sets the "lec_url_name" field.
+func (u *FileUpsertBulk) SetLecURLName(v string) *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.SetLecURLName(v)
+	})
+}
+
+// UpdateLecURLName sets the "lec_url_name" field to the value that was provided on create.
+func (u *FileUpsertBulk) UpdateLecURLName() *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.UpdateLecURLName()
+	})
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (u *FileUpsertBulk) ClearLecURLName() *FileUpsertBulk {
+	return u.Update(func(s *FileUpsert) {
+		s.ClearLecURLName()
+	})
 }
 
 // SetLecDeletedAt sets the "lec_deleted_at" field.

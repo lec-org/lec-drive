@@ -260,6 +260,7 @@ type ListResponse struct {
 }
 
 type FileResponse struct {
+	URLName       string              `json:"url_name,omitempty"`
 	Type          int                 `json:"type"`
 	ID            string              `json:"id"`
 	Name          string              `json:"name"`
@@ -415,6 +416,7 @@ func BuildFileResponse(ctx context.Context, u *ent.User, f fs.File, hasher hashi
 	}
 
 	res := &FileResponse{
+		URLName:       f.URLName(),
 		Type:          int(f.Type()),
 		ID:            hashid.EncodeFileID(hasher, f.ID()),
 		Name:          f.DisplayName(),
@@ -465,9 +467,13 @@ func BuildExtendedInfo(ctx context.Context, u *ent.User, f fs.File, hasher hashi
 }
 
 func BuildDirectLink(d *ent.DirectLink, hasher hashid.Encoder, base *url.URL) DirectLink {
+	publicURL := ""
+	if d.PublicPath != nil {
+		publicURL = routes.ReadableDirectLink(base, *d.PublicPath).String()
+	}
 	return DirectLink{
 		ID:         hashid.EncodeSourceLinkID(hasher, d.ID),
-		URL:        routes.MasterDirectLink(base, hashid.EncodeSourceLinkID(hasher, d.ID), d.Name).String(),
+		URL:        publicURL,
 		Downloaded: d.Downloads,
 		CreatedAt:  d.CreatedAt,
 	}

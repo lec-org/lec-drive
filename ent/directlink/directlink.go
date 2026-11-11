@@ -21,6 +21,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldPublicPath holds the string denoting the public_path field in the database.
+	FieldPublicPath = "public_path"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldDownloads holds the string denoting the downloads field in the database.
@@ -48,6 +50,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldPublicPath,
 	FieldName,
 	FieldDownloads,
 	FieldFileID,
@@ -78,6 +81,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// PublicPathValidator is a validator for the "public_path" field. It is called by the builders before save.
+	PublicPathValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the DirectLink queries.
@@ -101,6 +106,11 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDeletedAt orders the results by the deleted_at field.
 func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByPublicPath orders the results by the public_path field.
+func ByPublicPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPublicPath, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

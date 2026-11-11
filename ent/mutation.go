@@ -926,6 +926,7 @@ type DirectLinkMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
+	public_path   *string
 	name          *string
 	downloads     *int
 	adddownloads  *int
@@ -1156,6 +1157,55 @@ func (m *DirectLinkMutation) DeletedAtCleared() bool {
 func (m *DirectLinkMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, directlink.FieldDeletedAt)
+}
+
+// SetPublicPath sets the "public_path" field.
+func (m *DirectLinkMutation) SetPublicPath(s string) {
+	m.public_path = &s
+}
+
+// PublicPath returns the value of the "public_path" field in the mutation.
+func (m *DirectLinkMutation) PublicPath() (r string, exists bool) {
+	v := m.public_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPublicPath returns the old "public_path" field's value of the DirectLink entity.
+// If the DirectLink object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DirectLinkMutation) OldPublicPath(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPublicPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPublicPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPublicPath: %w", err)
+	}
+	return oldValue.PublicPath, nil
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (m *DirectLinkMutation) ClearPublicPath() {
+	m.public_path = nil
+	m.clearedFields[directlink.FieldPublicPath] = struct{}{}
+}
+
+// PublicPathCleared returns if the "public_path" field was cleared in this mutation.
+func (m *DirectLinkMutation) PublicPathCleared() bool {
+	_, ok := m.clearedFields[directlink.FieldPublicPath]
+	return ok
+}
+
+// ResetPublicPath resets all changes to the "public_path" field.
+func (m *DirectLinkMutation) ResetPublicPath() {
+	m.public_path = nil
+	delete(m.clearedFields, directlink.FieldPublicPath)
 }
 
 // SetName sets the "name" field.
@@ -1403,7 +1453,7 @@ func (m *DirectLinkMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DirectLinkMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, directlink.FieldCreatedAt)
 	}
@@ -1412,6 +1462,9 @@ func (m *DirectLinkMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, directlink.FieldDeletedAt)
+	}
+	if m.public_path != nil {
+		fields = append(fields, directlink.FieldPublicPath)
 	}
 	if m.name != nil {
 		fields = append(fields, directlink.FieldName)
@@ -1439,6 +1492,8 @@ func (m *DirectLinkMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case directlink.FieldDeletedAt:
 		return m.DeletedAt()
+	case directlink.FieldPublicPath:
+		return m.PublicPath()
 	case directlink.FieldName:
 		return m.Name()
 	case directlink.FieldDownloads:
@@ -1462,6 +1517,8 @@ func (m *DirectLinkMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUpdatedAt(ctx)
 	case directlink.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case directlink.FieldPublicPath:
+		return m.OldPublicPath(ctx)
 	case directlink.FieldName:
 		return m.OldName(ctx)
 	case directlink.FieldDownloads:
@@ -1499,6 +1556,13 @@ func (m *DirectLinkMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case directlink.FieldPublicPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPublicPath(v)
 		return nil
 	case directlink.FieldName:
 		v, ok := value.(string)
@@ -1588,6 +1652,9 @@ func (m *DirectLinkMutation) ClearedFields() []string {
 	if m.FieldCleared(directlink.FieldDeletedAt) {
 		fields = append(fields, directlink.FieldDeletedAt)
 	}
+	if m.FieldCleared(directlink.FieldPublicPath) {
+		fields = append(fields, directlink.FieldPublicPath)
+	}
 	return fields
 }
 
@@ -1605,6 +1672,9 @@ func (m *DirectLinkMutation) ClearField(name string) error {
 	case directlink.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case directlink.FieldPublicPath:
+		m.ClearPublicPath()
+		return nil
 	}
 	return fmt.Errorf("unknown DirectLink nullable field %s", name)
 }
@@ -1621,6 +1691,9 @@ func (m *DirectLinkMutation) ResetField(name string) error {
 		return nil
 	case directlink.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case directlink.FieldPublicPath:
+		m.ResetPublicPath()
 		return nil
 	case directlink.FieldName:
 		m.ResetName()
@@ -2976,6 +3049,7 @@ type FileMutation struct {
 	op                      Op
 	typ                     string
 	id                      *int
+	lec_url_name            *string
 	lec_deleted_at          *time.Time
 	created_at              *time.Time
 	updated_at              *time.Time
@@ -3111,6 +3185,55 @@ func (m *FileMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetLecURLName sets the "lec_url_name" field.
+func (m *FileMutation) SetLecURLName(s string) {
+	m.lec_url_name = &s
+}
+
+// LecURLName returns the value of the "lec_url_name" field in the mutation.
+func (m *FileMutation) LecURLName() (r string, exists bool) {
+	v := m.lec_url_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLecURLName returns the old "lec_url_name" field's value of the File entity.
+// If the File object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FileMutation) OldLecURLName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLecURLName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLecURLName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLecURLName: %w", err)
+	}
+	return oldValue.LecURLName, nil
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (m *FileMutation) ClearLecURLName() {
+	m.lec_url_name = nil
+	m.clearedFields[file.FieldLecURLName] = struct{}{}
+}
+
+// LecURLNameCleared returns if the "lec_url_name" field was cleared in this mutation.
+func (m *FileMutation) LecURLNameCleared() bool {
+	_, ok := m.clearedFields[file.FieldLecURLName]
+	return ok
+}
+
+// ResetLecURLName resets all changes to the "lec_url_name" field.
+func (m *FileMutation) ResetLecURLName() {
+	m.lec_url_name = nil
+	delete(m.clearedFields, file.FieldLecURLName)
 }
 
 // SetLecDeletedAt sets the "lec_deleted_at" field.
@@ -4082,7 +4205,10 @@ func (m *FileMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FileMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
+	if m.lec_url_name != nil {
+		fields = append(fields, file.FieldLecURLName)
+	}
 	if m.lec_deleted_at != nil {
 		fields = append(fields, file.FieldLecDeletedAt)
 	}
@@ -4127,6 +4253,8 @@ func (m *FileMutation) Fields() []string {
 // schema.
 func (m *FileMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case file.FieldLecURLName:
+		return m.LecURLName()
 	case file.FieldLecDeletedAt:
 		return m.LecDeletedAt()
 	case file.FieldCreatedAt:
@@ -4160,6 +4288,8 @@ func (m *FileMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *FileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case file.FieldLecURLName:
+		return m.OldLecURLName(ctx)
 	case file.FieldLecDeletedAt:
 		return m.OldLecDeletedAt(ctx)
 	case file.FieldCreatedAt:
@@ -4193,6 +4323,13 @@ func (m *FileMutation) OldField(ctx context.Context, name string) (ent.Value, er
 // type.
 func (m *FileMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case file.FieldLecURLName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLecURLName(v)
+		return nil
 	case file.FieldLecDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -4346,6 +4483,9 @@ func (m *FileMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *FileMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(file.FieldLecURLName) {
+		fields = append(fields, file.FieldLecURLName)
+	}
 	if m.FieldCleared(file.FieldLecDeletedAt) {
 		fields = append(fields, file.FieldLecDeletedAt)
 	}
@@ -4375,6 +4515,9 @@ func (m *FileMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *FileMutation) ClearField(name string) error {
 	switch name {
+	case file.FieldLecURLName:
+		m.ClearLecURLName()
+		return nil
 	case file.FieldLecDeletedAt:
 		m.ClearLecDeletedAt()
 		return nil
@@ -4398,6 +4541,9 @@ func (m *FileMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *FileMutation) ResetField(name string) error {
 	switch name {
+	case file.FieldLecURLName:
+		m.ResetLecURLName()
+		return nil
 	case file.FieldLecDeletedAt:
 		m.ResetLecDeletedAt()
 		return nil

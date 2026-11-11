@@ -1,7 +1,7 @@
 {
   "name": "cloudreve-frontend",
   "private": true,
-  "version": "4.19.1+lec.1",
+  "version": "4.19.1+lec.2",
   "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=22"

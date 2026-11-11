@@ -110,6 +110,15 @@ const Rename = () => {
             />
           </StyledDialogContentText>
           <form ref={formRef} onSubmit={onAccept}>
+            {targets?.type == FileType.folder && targets.url_name && (
+              <FilledTextField
+                label="英文访问名（固定）"
+                value={targets.url_name}
+                fullWidth
+                margin="dense"
+                slotProps={{ input: { readOnly: true } }}
+              />
+            )}
             <FilledTextField
               inputRef={inputRef}
               variant="filled"
@@ -117,7 +126,7 @@ const Rename = () => {
               error={!!error}
               helperText={error}
               margin="dense"
-              label={t("application:modals.newName")}
+              label={targets?.type == FileType.folder ? "显示名称" : t("application:modals.newName")}
               type="text"
               value={name}
               onChange={onNameChange}

@@ -100,16 +100,12 @@ func ExtractArchive(c *gin.Context) {
 	}
 }
 
-// AnonymousPermLink 文件中转后的永久直链接
-func AnonymousPermLink(download bool) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		name := c.Param("name")
-		if err := explorer.RedirectDirectLink(c, name, download); err != nil {
-			c.JSON(404, serializer.Err(c, err))
-			c.Abort()
-			return
-		}
+// ReadableImage 通过可读路径访问图片，下载沿用同一条链接的查询参数。
+func ReadableImage(c *gin.Context) {
+	if err := explorer.RedirectReadableLink(c, c.Request.URL.Path[1:], c.Query("download") == "1"); err != nil {
+		c.JSON(404, serializer.Err(c, err))
 	}
+	c.Abort()
 }
 
 // GetSource 获取文件的外链地址

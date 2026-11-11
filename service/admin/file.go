@@ -268,7 +268,9 @@ func (service *SingleFileService) Get(c *gin.Context) (*GetFileResponse, error) 
 	directLinkMap := make(map[int]string)
 	siteURL := dep.SettingProvider().SiteURL(c)
 	for _, directLink := range file.Edges.DirectLinks {
-		directLinkMap[directLink.ID] = routes.MasterDirectLink(siteURL, hashid.EncodeSourceLinkID(hasher, directLink.ID), directLink.Name).String()
+		if directLink.PublicPath != nil {
+			directLinkMap[directLink.ID] = routes.ReadableDirectLink(siteURL, *directLink.PublicPath).String()
+		}
 	}
 
 	return &GetFileResponse{

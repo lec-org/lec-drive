@@ -35,6 +35,26 @@ func (fu *FileUpdate) Where(ps ...predicate.File) *FileUpdate {
 	return fu
 }
 
+// SetLecURLName sets the "lec_url_name" field.
+func (fu *FileUpdate) SetLecURLName(s string) *FileUpdate {
+	fu.mutation.SetLecURLName(s)
+	return fu
+}
+
+// SetNillableLecURLName sets the "lec_url_name" field if the given value is not nil.
+func (fu *FileUpdate) SetNillableLecURLName(s *string) *FileUpdate {
+	if s != nil {
+		fu.SetLecURLName(*s)
+	}
+	return fu
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (fu *FileUpdate) ClearLecURLName() *FileUpdate {
+	fu.mutation.ClearLecURLName()
+	return fu
+}
+
 // SetLecDeletedAt sets the "lec_deleted_at" field.
 func (fu *FileUpdate) SetLecDeletedAt(t time.Time) *FileUpdate {
 	fu.mutation.SetLecDeletedAt(t)
@@ -507,6 +527,11 @@ func (fu *FileUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (fu *FileUpdate) check() error {
+	if v, ok := fu.mutation.LecURLName(); ok {
+		if err := file.LecURLNameValidator(v); err != nil {
+			return &ValidationError{Name: "lec_url_name", err: fmt.Errorf(`ent: validator failed for field "File.lec_url_name": %w`, err)}
+		}
+	}
 	if _, ok := fu.mutation.OwnerID(); fu.mutation.OwnerCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "File.owner"`)
 	}
@@ -524,6 +549,12 @@ func (fu *FileUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := fu.mutation.LecURLName(); ok {
+		_spec.SetField(file.FieldLecURLName, field.TypeString, value)
+	}
+	if fu.mutation.LecURLNameCleared() {
+		_spec.ClearField(file.FieldLecURLName, field.TypeString)
 	}
 	if value, ok := fu.mutation.LecDeletedAt(); ok {
 		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)
@@ -897,6 +928,26 @@ type FileUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *FileMutation
+}
+
+// SetLecURLName sets the "lec_url_name" field.
+func (fuo *FileUpdateOne) SetLecURLName(s string) *FileUpdateOne {
+	fuo.mutation.SetLecURLName(s)
+	return fuo
+}
+
+// SetNillableLecURLName sets the "lec_url_name" field if the given value is not nil.
+func (fuo *FileUpdateOne) SetNillableLecURLName(s *string) *FileUpdateOne {
+	if s != nil {
+		fuo.SetLecURLName(*s)
+	}
+	return fuo
+}
+
+// ClearLecURLName clears the value of the "lec_url_name" field.
+func (fuo *FileUpdateOne) ClearLecURLName() *FileUpdateOne {
+	fuo.mutation.ClearLecURLName()
+	return fuo
 }
 
 // SetLecDeletedAt sets the "lec_deleted_at" field.
@@ -1384,6 +1435,11 @@ func (fuo *FileUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (fuo *FileUpdateOne) check() error {
+	if v, ok := fuo.mutation.LecURLName(); ok {
+		if err := file.LecURLNameValidator(v); err != nil {
+			return &ValidationError{Name: "lec_url_name", err: fmt.Errorf(`ent: validator failed for field "File.lec_url_name": %w`, err)}
+		}
+	}
 	if _, ok := fuo.mutation.OwnerID(); fuo.mutation.OwnerCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "File.owner"`)
 	}
@@ -1418,6 +1474,12 @@ func (fuo *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := fuo.mutation.LecURLName(); ok {
+		_spec.SetField(file.FieldLecURLName, field.TypeString, value)
+	}
+	if fuo.mutation.LecURLNameCleared() {
+		_spec.ClearField(file.FieldLecURLName, field.TypeString)
 	}
 	if value, ok := fuo.mutation.LecDeletedAt(); ok {
 		_spec.SetField(file.FieldLecDeletedAt, field.TypeTime, value)

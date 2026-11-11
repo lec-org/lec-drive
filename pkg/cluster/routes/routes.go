@@ -75,10 +75,8 @@ func MasterShareUrl(base *url.URL, id, password string) *url.URL {
 	return base.ResolveReference(route)
 }
 
-func MasterDirectLink(base *url.URL, id, name string) *url.URL {
-	p := path.Join("/f", id, url.PathEscape(name))
-	route, _ := url.Parse(p)
-	return base.ResolveReference(route)
+func ReadableDirectLink(base *url.URL, publicPath string) *url.URL {
+	return base.ResolveReference(&url.URL{Path: "/" + publicPath})
 }
 
 // MasterShareLongUrl generates a long share URL for redirect.

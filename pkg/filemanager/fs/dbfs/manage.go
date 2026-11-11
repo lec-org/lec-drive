@@ -96,6 +96,7 @@ func (f *DBFS) Create(ctx context.Context, path *fs.URI, fileType types.FileType
 
 			// Apply options for last element
 			if i == len(desired)-1 {
+				args.URLName = o.FolderURLName
 				if o.Metadata != nil {
 					args.Metadata = o.Metadata
 				}

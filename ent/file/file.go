@@ -15,6 +15,8 @@ const (
 	Label = "file"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldLecURLName holds the string denoting the lec_url_name field in the database.
+	FieldLecURLName = "lec_url_name"
 	// FieldLecDeletedAt holds the string denoting the lec_deleted_at field in the database.
 	FieldLecDeletedAt = "lec_deleted_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -110,6 +112,7 @@ const (
 // Columns holds all SQL columns for file fields.
 var Columns = []string{
 	FieldID,
+	FieldLecURLName,
 	FieldLecDeletedAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -147,6 +150,8 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/cloudreve/Cloudreve/v4/ent/runtime"
 var (
 	Hooks [1]ent.Hook
+	// LecURLNameValidator is a validator for the "lec_url_name" field. It is called by the builders before save.
+	LecURLNameValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -163,6 +168,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByLecURLName orders the results by the lec_url_name field.
+func ByLecURLName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLecURLName, opts...).ToFunc()
 }
 
 // ByLecDeletedAt orders the results by the lec_deleted_at field.

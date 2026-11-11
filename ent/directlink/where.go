@@ -70,6 +70,11 @@ func DeletedAt(v time.Time) predicate.DirectLink {
 	return predicate.DirectLink(sql.FieldEQ(FieldDeletedAt, v))
 }
 
+// PublicPath applies equality check predicate on the "public_path" field. It's identical to PublicPathEQ.
+func PublicPath(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldEQ(FieldPublicPath, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.DirectLink {
 	return predicate.DirectLink(sql.FieldEQ(FieldName, v))
@@ -218,6 +223,81 @@ func DeletedAtIsNil() predicate.DirectLink {
 // DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
 func DeletedAtNotNil() predicate.DirectLink {
 	return predicate.DirectLink(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// PublicPathEQ applies the EQ predicate on the "public_path" field.
+func PublicPathEQ(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldEQ(FieldPublicPath, v))
+}
+
+// PublicPathNEQ applies the NEQ predicate on the "public_path" field.
+func PublicPathNEQ(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldNEQ(FieldPublicPath, v))
+}
+
+// PublicPathIn applies the In predicate on the "public_path" field.
+func PublicPathIn(vs ...string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldIn(FieldPublicPath, vs...))
+}
+
+// PublicPathNotIn applies the NotIn predicate on the "public_path" field.
+func PublicPathNotIn(vs ...string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldNotIn(FieldPublicPath, vs...))
+}
+
+// PublicPathGT applies the GT predicate on the "public_path" field.
+func PublicPathGT(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldGT(FieldPublicPath, v))
+}
+
+// PublicPathGTE applies the GTE predicate on the "public_path" field.
+func PublicPathGTE(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldGTE(FieldPublicPath, v))
+}
+
+// PublicPathLT applies the LT predicate on the "public_path" field.
+func PublicPathLT(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldLT(FieldPublicPath, v))
+}
+
+// PublicPathLTE applies the LTE predicate on the "public_path" field.
+func PublicPathLTE(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldLTE(FieldPublicPath, v))
+}
+
+// PublicPathContains applies the Contains predicate on the "public_path" field.
+func PublicPathContains(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldContains(FieldPublicPath, v))
+}
+
+// PublicPathHasPrefix applies the HasPrefix predicate on the "public_path" field.
+func PublicPathHasPrefix(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldHasPrefix(FieldPublicPath, v))
+}
+
+// PublicPathHasSuffix applies the HasSuffix predicate on the "public_path" field.
+func PublicPathHasSuffix(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldHasSuffix(FieldPublicPath, v))
+}
+
+// PublicPathIsNil applies the IsNil predicate on the "public_path" field.
+func PublicPathIsNil() predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldIsNull(FieldPublicPath))
+}
+
+// PublicPathNotNil applies the NotNil predicate on the "public_path" field.
+func PublicPathNotNil() predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldNotNull(FieldPublicPath))
+}
+
+// PublicPathEqualFold applies the EqualFold predicate on the "public_path" field.
+func PublicPathEqualFold(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldEqualFold(FieldPublicPath, v))
+}
+
+// PublicPathContainsFold applies the ContainsFold predicate on the "public_path" field.
+func PublicPathContainsFold(v string) predicate.DirectLink {
+	return predicate.DirectLink(sql.FieldContainsFold(FieldPublicPath, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

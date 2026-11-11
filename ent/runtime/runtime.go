@@ -67,6 +67,10 @@ func init() {
 	directlink.DefaultUpdatedAt = directlinkDescUpdatedAt.Default.(func() time.Time)
 	// directlink.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	directlink.UpdateDefaultUpdatedAt = directlinkDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// directlinkDescPublicPath is the schema descriptor for public_path field.
+	directlinkDescPublicPath := directlinkFields[0].Descriptor()
+	// directlink.PublicPathValidator is a validator for the "public_path" field. It is called by the builders before save.
+	directlink.PublicPathValidator = directlinkDescPublicPath.Validators[0].(func(string) error)
 	entityMixin := schema.Entity{}.Mixin()
 	entityMixinHooks0 := entityMixin[0].Hooks()
 	entity.Hooks[0] = entityMixinHooks0[0]
@@ -94,20 +98,24 @@ func init() {
 	file.Hooks[0] = fileHooks[0]
 	fileFields := schema.File{}.Fields()
 	_ = fileFields
+	// fileDescLecURLName is the schema descriptor for lec_url_name field.
+	fileDescLecURLName := fileFields[0].Descriptor()
+	// file.LecURLNameValidator is a validator for the "lec_url_name" field. It is called by the builders before save.
+	file.LecURLNameValidator = fileDescLecURLName.Validators[0].(func(string) error)
 	// fileDescCreatedAt is the schema descriptor for created_at field.
-	fileDescCreatedAt := fileFields[1].Descriptor()
+	fileDescCreatedAt := fileFields[2].Descriptor()
 	// file.DefaultCreatedAt holds the default value on creation for the created_at field.
 	file.DefaultCreatedAt = fileDescCreatedAt.Default.(func() time.Time)
 	// fileDescUpdatedAt is the schema descriptor for updated_at field.
-	fileDescUpdatedAt := fileFields[2].Descriptor()
+	fileDescUpdatedAt := fileFields[3].Descriptor()
 	// file.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	file.DefaultUpdatedAt = fileDescUpdatedAt.Default.(func() time.Time)
 	// fileDescSize is the schema descriptor for size field.
-	fileDescSize := fileFields[6].Descriptor()
+	fileDescSize := fileFields[7].Descriptor()
 	// file.DefaultSize holds the default value on creation for the size field.
 	file.DefaultSize = fileDescSize.Default.(int64)
 	// fileDescIsSymbolic is the schema descriptor for is_symbolic field.
-	fileDescIsSymbolic := fileFields[9].Descriptor()
+	fileDescIsSymbolic := fileFields[10].Descriptor()
 	// file.DefaultIsSymbolic holds the default value on creation for the is_symbolic field.
 	file.DefaultIsSymbolic = fileDescIsSymbolic.Default.(bool)
 	fseventMixin := schema.FsEvent{}.Mixin()

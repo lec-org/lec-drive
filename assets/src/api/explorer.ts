@@ -19,6 +19,7 @@ export const FileType = {
 };
 
 export interface FileResponse {
+  url_name?: string;
   type: number;
   id: string;
   name: string;
@@ -311,6 +312,7 @@ export interface ShareCreateService {
 }
 
 export interface CreateFileService {
+  url_name?: string;
   uri: string;
   type: "file" | "folder";
   err_on_conflict?: boolean;

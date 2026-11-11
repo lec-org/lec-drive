@@ -208,6 +208,7 @@ func initMasterRouter(dep dependency.Dep) *gin.Engine {
 	*/
 	r.Use(gzip.Gzip(gzip.DefaultCompression, gzip.WithExcludedPaths([]string{"/api/"})))
 	r.Use(middleware.SharePreview(dep))
+	r.Use(middleware.ReadableFileHandler(controllers.ReadableImage))
 	r.Use(middleware.FrontendFileHandler(dep))
 	r.GET("manifest.json", controllers.Manifest)
 
@@ -241,19 +242,6 @@ func initMasterRouter(dep dependency.Dep) *gin.Engine {
 		路由
 	*/
 	{
-		// Redirect file source link
-		source := r.Group("f")
-		source.Use(middleware.ContentCORS())
-		{
-			source.OPTIONS("*option", middleware.ContentCORS())
-			source.GET(":id/:name",
-				middleware.HashID(hashid.SourceLinkID),
-				controllers.AnonymousPermLink(false))
-			source.GET("d/:id/:name",
-				middleware.HashID(hashid.SourceLinkID),
-				controllers.AnonymousPermLink(true))
-		}
-
 		shareShort := r.Group("s")
 		{
 			shareShort.GET(":id",

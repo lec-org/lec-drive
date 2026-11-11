@@ -15,7 +15,6 @@ import (
 	"github.com/cloudreve/Cloudreve/v4/pkg/filemanager/fs"
 	"github.com/cloudreve/Cloudreve/v4/pkg/filemanager/fs/dbfs"
 	"github.com/cloudreve/Cloudreve/v4/pkg/filemanager/manager/entitysource"
-	"github.com/cloudreve/Cloudreve/v4/pkg/hashid"
 	"github.com/cloudreve/Cloudreve/v4/pkg/serializer"
 	"github.com/gofrs/uuid"
 )
@@ -62,7 +61,6 @@ func (m *manager) GetDirectLink(ctx context.Context, urls ...*fs.URI) ([]DirectL
 	ae := serializer.NewAggregateError()
 	res := make([]DirectLink, 0, len(urls))
 	useRedirect := m.user.Edges.Group.Settings.RedirectedSource
-	fileClient := m.dep.FileClient()
 	siteUrl := m.settings.SiteURL(ctx)
 
 	for _, url := range urls {
@@ -98,19 +96,17 @@ func (m *manager) GetDirectLink(ctx context.Context, urls ...*fs.URI) ([]DirectL
 		}
 
 		if useRedirect {
-			reuseExisting := !m.user.Edges.Group.Permissions.Enabled(int(types.GroupPermissionUniqueRedirectDirectLink))
-			// Use redirect source
-			link, err := fileClient.CreateDirectLink(ctx, file.ID(), file.Name(), m.user.Edges.Group.SpeedLimit, reuseExisting)
+			model, err := m.dep.DBClient().File.Get(ctx, file.ID())
 			if err != nil {
 				ae.Add(url.String(), err)
 				continue
 			}
-
-			linkHashID := hashid.EncodeSourceLinkID(m.hasher, link.ID)
-			res = append(res, DirectLink{
-				File: file,
-				Url:  routes.MasterDirectLink(siteUrl, linkHashID, link.Name).String(),
-			})
+			link, err := inventory.EnsureReadableLink(ctx, m.dep.DBClient(), model, m.user.Edges.Group.SpeedLimit)
+			if err != nil {
+				ae.Add(url.String(), err)
+				continue
+			}
+			res = append(res, DirectLink{File: file, Url: routes.ReadableDirectLink(siteUrl, *link.PublicPath).String()})
 		} else {
 			// Use direct source
 			policy, d, err := m.getEntityPolicyDriver(ctx, target, nil)

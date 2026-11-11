@@ -14,6 +14,7 @@ type DirectLink struct {
 // Fields of the DirectLink.
 func (DirectLink) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("public_path").MaxLen(2048).Optional().Nillable().Unique(),
 		field.String("name"),
 		field.Int("downloads"),
 		field.Int("file_id"),

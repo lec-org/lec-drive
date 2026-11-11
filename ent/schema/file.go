@@ -21,6 +21,8 @@ type File struct {
 // Fields of the File.
 func (File) Fields() []ent.Field {
 	return []ent.Field{
+		// 目录访问名独立于中文显示名，创建后保持稳定。
+		field.String("lec_url_name").MaxLen(64).Optional().Nillable(),
 		// 独立记录回收时间，客户端元数据不能缩短团队图片的保留期。
 		field.Time("lec_deleted_at").Optional().Nillable(),
 		field.Time("created_at").
@@ -77,6 +79,7 @@ func (File) Edges() []ent.Edge {
 // Indexes of the File.
 func (File) Indexes() []ent.Index {
 	return []ent.Index{
+		index.Fields("owner_id", "file_children", "lec_url_name").Unique(),
 		index.Fields("file_children", "name").
 			Unique(),
 		index.Fields("file_children", "type", "updated_at"),

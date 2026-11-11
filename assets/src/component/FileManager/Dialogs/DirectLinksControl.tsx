@@ -69,10 +69,9 @@ const DirectLinksControl = () => {
 
   const directLinks = useMemo(() => {
     return fileExtended?.extended_info?.direct_links?.map((link) => {
-      return {
-        ...link,
-        url: forceDownload ? link.url.replace("/f/", "/f/d/") : link.url,
-      };
+      const url = new URL(link.url);
+      if (forceDownload) url.searchParams.set("download", "1");
+      return { ...link, url: url.toString() };
     });
   }, [fileExtended?.extended_info?.direct_links, forceDownload]);
 

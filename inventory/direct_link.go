@@ -12,6 +12,7 @@ import (
 
 type (
 	DirectLinkClient interface {
+		GetByPublicPath(ctx context.Context, path string) (*ent.DirectLink, error)
 		TxOperator
 		// GetByNameID get direct link by name and id
 		GetByNameID(ctx context.Context, id int, name string) (*ent.DirectLink, error)
@@ -48,6 +49,15 @@ func (c *directLinkClient) GetClient() *ent.Client {
 func (d *directLinkClient) GetByID(ctx context.Context, id int) (*ent.DirectLink, error) {
 	return withDirectLinkEagerLoading(ctx, d.client.DirectLink.Query().Where(directlink.ID(id))).
 		First(ctx)
+}
+
+func (d *directLinkClient) GetByPublicPath(ctx context.Context, path string) (*ent.DirectLink, error) {
+	link, err := withDirectLinkEagerLoading(ctx, d.client.DirectLink.Query().Where(directlink.PublicPath(path))).Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	_ = d.client.DirectLink.UpdateOneID(link.ID).AddDownloads(1).Exec(ctx)
+	return link, nil
 }
 
 func (d *directLinkClient) GetByNameID(ctx context.Context, id int, name string) (*ent.DirectLink, error) {

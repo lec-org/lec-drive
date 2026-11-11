@@ -55,6 +55,11 @@ func IDLTE(id int) predicate.File {
 	return predicate.File(sql.FieldLTE(FieldID, id))
 }
 
+// LecURLName applies equality check predicate on the "lec_url_name" field. It's identical to LecURLNameEQ.
+func LecURLName(v string) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldLecURLName, v))
+}
+
 // LecDeletedAt applies equality check predicate on the "lec_deleted_at" field. It's identical to LecDeletedAtEQ.
 func LecDeletedAt(v time.Time) predicate.File {
 	return predicate.File(sql.FieldEQ(FieldLecDeletedAt, v))
@@ -108,6 +113,81 @@ func IsSymbolic(v bool) predicate.File {
 // StoragePolicyFiles applies equality check predicate on the "storage_policy_files" field. It's identical to StoragePolicyFilesEQ.
 func StoragePolicyFiles(v int) predicate.File {
 	return predicate.File(sql.FieldEQ(FieldStoragePolicyFiles, v))
+}
+
+// LecURLNameEQ applies the EQ predicate on the "lec_url_name" field.
+func LecURLNameEQ(v string) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldLecURLName, v))
+}
+
+// LecURLNameNEQ applies the NEQ predicate on the "lec_url_name" field.
+func LecURLNameNEQ(v string) predicate.File {
+	return predicate.File(sql.FieldNEQ(FieldLecURLName, v))
+}
+
+// LecURLNameIn applies the In predicate on the "lec_url_name" field.
+func LecURLNameIn(vs ...string) predicate.File {
+	return predicate.File(sql.FieldIn(FieldLecURLName, vs...))
+}
+
+// LecURLNameNotIn applies the NotIn predicate on the "lec_url_name" field.
+func LecURLNameNotIn(vs ...string) predicate.File {
+	return predicate.File(sql.FieldNotIn(FieldLecURLName, vs...))
+}
+
+// LecURLNameGT applies the GT predicate on the "lec_url_name" field.
+func LecURLNameGT(v string) predicate.File {
+	return predicate.File(sql.FieldGT(FieldLecURLName, v))
+}
+
+// LecURLNameGTE applies the GTE predicate on the "lec_url_name" field.
+func LecURLNameGTE(v string) predicate.File {
+	return predicate.File(sql.FieldGTE(FieldLecURLName, v))
+}
+
+// LecURLNameLT applies the LT predicate on the "lec_url_name" field.
+func LecURLNameLT(v string) predicate.File {
+	return predicate.File(sql.FieldLT(FieldLecURLName, v))
+}
+
+// LecURLNameLTE applies the LTE predicate on the "lec_url_name" field.
+func LecURLNameLTE(v string) predicate.File {
+	return predicate.File(sql.FieldLTE(FieldLecURLName, v))
+}
+
+// LecURLNameContains applies the Contains predicate on the "lec_url_name" field.
+func LecURLNameContains(v string) predicate.File {
+	return predicate.File(sql.FieldContains(FieldLecURLName, v))
+}
+
+// LecURLNameHasPrefix applies the HasPrefix predicate on the "lec_url_name" field.
+func LecURLNameHasPrefix(v string) predicate.File {
+	return predicate.File(sql.FieldHasPrefix(FieldLecURLName, v))
+}
+
+// LecURLNameHasSuffix applies the HasSuffix predicate on the "lec_url_name" field.
+func LecURLNameHasSuffix(v string) predicate.File {
+	return predicate.File(sql.FieldHasSuffix(FieldLecURLName, v))
+}
+
+// LecURLNameIsNil applies the IsNil predicate on the "lec_url_name" field.
+func LecURLNameIsNil() predicate.File {
+	return predicate.File(sql.FieldIsNull(FieldLecURLName))
+}
+
+// LecURLNameNotNil applies the NotNil predicate on the "lec_url_name" field.
+func LecURLNameNotNil() predicate.File {
+	return predicate.File(sql.FieldNotNull(FieldLecURLName))
+}
+
+// LecURLNameEqualFold applies the EqualFold predicate on the "lec_url_name" field.
+func LecURLNameEqualFold(v string) predicate.File {
+	return predicate.File(sql.FieldEqualFold(FieldLecURLName, v))
+}
+
+// LecURLNameContainsFold applies the ContainsFold predicate on the "lec_url_name" field.
+func LecURLNameContainsFold(v string) predicate.File {
+	return predicate.File(sql.FieldContainsFold(FieldLecURLName, v))
 }
 
 // LecDeletedAtEQ applies the EQ predicate on the "lec_deleted_at" field.

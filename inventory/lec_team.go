@@ -144,7 +144,7 @@ func AssignLecTeam(ctx context.Context, db *ent.Client, member, owner *ent.User)
 			return err
 		}
 		folder := fmt.Sprintf("迁入文件-%d-%s", member.ID, rand.Text()[:8])
-		if _, err = tx.File.UpdateOne(root).SetName(folder).SetParentID(teamRoot.ID).Save(ctx); err != nil {
+		if _, err = tx.File.UpdateOne(root).SetName(folder).SetLecURLName(fmt.Sprintf("imported_%d_%s", member.ID, rand.Text()[:8])).SetParentID(teamRoot.ID).Save(ctx); err != nil {
 			return err
 		}
 		// 回收站中的原恢复位置也跟随目录迁入，避免恢复到团队根目录的错误位置。

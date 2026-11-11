@@ -211,6 +211,7 @@ func (service *ListFileService) List(c *gin.Context) (*ListResponse, error) {
 type (
 	CreateFileParameterCtx struct{}
 	CreateFileService      struct {
+		URLName       string            `json:"url_name"`
 		Uri           string            `json:"uri" binding:"required"`
 		Type          string            `json:"type" binding:"required,eq=file|eq=folder"`
 		Metadata      map[string]string `json:"metadata"`
@@ -230,8 +231,12 @@ func (service *CreateFileService) Create(c *gin.Context) (*FileResponse, error) 
 	}
 
 	fileType := types.FileTypeFromString(service.Type)
+	if fileType == types.FileTypeFolder && service.URLName == "" {
+		return nil, serializer.NewError(serializer.CodeParamErr, "请填写文件夹英文名", nil)
+	}
 	opts := []fs.Option{
 		fs.WithMetadata(service.Metadata),
+		fs.WithFolderURLName(service.URLName),
 	}
 	if service.ErrOnConflict {
 		opts = append(opts, dbfs.WithErrorOnConflict())
@@ -676,20 +681,22 @@ func (s *GetFileInfoService) Get(c *gin.Context) (*FileResponse, error) {
 	return BuildFileResponse(c, user, file, dep.HashIDEncoder(), nil), nil
 }
 
-func RedirectDirectLink(c *gin.Context, name string, download bool) error {
+func RedirectReadableLink(c *gin.Context, publicPath string, download bool) error {
 	dep := dependency.FromContext(c)
 	settings := dep.SettingProvider()
 
-	sourceLinkID := hashid.FromContext(c)
 	ctx := context.WithValue(c, inventory.LoadDirectLinkFile{}, true)
 	ctx = context.WithValue(ctx, inventory.LoadFileEntity{}, true)
 	ctx = context.WithValue(ctx, inventory.LoadFileUser{}, true)
 	ctx = context.WithValue(ctx, inventory.LoadUserGroup{}, true)
-	dl, err := dep.DirectLinkClient().GetByNameID(ctx, sourceLinkID, name)
+	dl, err := dep.DirectLinkClient().GetByPublicPath(ctx, publicPath)
 	if err != nil {
 		return serializer.NewError(serializer.CodeNotFound, "direct link not found", err)
 	}
 
+	if dl.Edges.File.PrimaryEntity == 0 {
+		return serializer.NewError(serializer.CodeNotFound, "image is not ready", nil)
+	}
 	m := manager.NewFileManager(dep, dl.Edges.File.Edges.Owner)
 	defer m.Recycle()
 

@@ -54,6 +54,9 @@ func migrate(l logging.Logger, client *ent.Client, ctx context.Context, kv cache
 	if err := applyPatches(l, client, ctx, requiredDbVersion); err != nil {
 		return fmt.Errorf("failed applying schema patches: %w", err)
 	}
+	if err := migrateReadablePaths(ctx, client); err != nil {
+		return fmt.Errorf("failed migrating readable image paths: %w", err)
+	}
 
 	client.Setting.Create().SetName(DBVersionPrefix + requiredDbVersion).SetValue("installed").Save(ctx)
 	return nil

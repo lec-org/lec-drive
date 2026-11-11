@@ -42,7 +42,9 @@ const DirectLinks = () => {
   const getDisplayLink = useCallback(
     (link: string) => {
       if (forceDownload) {
-        return link.replace("/f/", "/f/d/");
+        const url = new URL(link);
+        url.searchParams.set("download", "1");
+        return url.toString();
       }
       return link;
     },

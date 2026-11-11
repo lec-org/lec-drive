@@ -55,6 +55,26 @@ func (dlu *DirectLinkUpdate) ClearDeletedAt() *DirectLinkUpdate {
 	return dlu
 }
 
+// SetPublicPath sets the "public_path" field.
+func (dlu *DirectLinkUpdate) SetPublicPath(s string) *DirectLinkUpdate {
+	dlu.mutation.SetPublicPath(s)
+	return dlu
+}
+
+// SetNillablePublicPath sets the "public_path" field if the given value is not nil.
+func (dlu *DirectLinkUpdate) SetNillablePublicPath(s *string) *DirectLinkUpdate {
+	if s != nil {
+		dlu.SetPublicPath(*s)
+	}
+	return dlu
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (dlu *DirectLinkUpdate) ClearPublicPath() *DirectLinkUpdate {
+	dlu.mutation.ClearPublicPath()
+	return dlu
+}
+
 // SetName sets the "name" field.
 func (dlu *DirectLinkUpdate) SetName(s string) *DirectLinkUpdate {
 	dlu.mutation.SetName(s)
@@ -185,6 +205,11 @@ func (dlu *DirectLinkUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (dlu *DirectLinkUpdate) check() error {
+	if v, ok := dlu.mutation.PublicPath(); ok {
+		if err := directlink.PublicPathValidator(v); err != nil {
+			return &ValidationError{Name: "public_path", err: fmt.Errorf(`ent: validator failed for field "DirectLink.public_path": %w`, err)}
+		}
+	}
 	if _, ok := dlu.mutation.FileID(); dlu.mutation.FileCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DirectLink.file"`)
 	}
@@ -211,6 +236,12 @@ func (dlu *DirectLinkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if dlu.mutation.DeletedAtCleared() {
 		_spec.ClearField(directlink.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := dlu.mutation.PublicPath(); ok {
+		_spec.SetField(directlink.FieldPublicPath, field.TypeString, value)
+	}
+	if dlu.mutation.PublicPathCleared() {
+		_spec.ClearField(directlink.FieldPublicPath, field.TypeString)
 	}
 	if value, ok := dlu.mutation.Name(); ok {
 		_spec.SetField(directlink.FieldName, field.TypeString, value)
@@ -299,6 +330,26 @@ func (dluo *DirectLinkUpdateOne) SetNillableDeletedAt(t *time.Time) *DirectLinkU
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (dluo *DirectLinkUpdateOne) ClearDeletedAt() *DirectLinkUpdateOne {
 	dluo.mutation.ClearDeletedAt()
+	return dluo
+}
+
+// SetPublicPath sets the "public_path" field.
+func (dluo *DirectLinkUpdateOne) SetPublicPath(s string) *DirectLinkUpdateOne {
+	dluo.mutation.SetPublicPath(s)
+	return dluo
+}
+
+// SetNillablePublicPath sets the "public_path" field if the given value is not nil.
+func (dluo *DirectLinkUpdateOne) SetNillablePublicPath(s *string) *DirectLinkUpdateOne {
+	if s != nil {
+		dluo.SetPublicPath(*s)
+	}
+	return dluo
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (dluo *DirectLinkUpdateOne) ClearPublicPath() *DirectLinkUpdateOne {
+	dluo.mutation.ClearPublicPath()
 	return dluo
 }
 
@@ -445,6 +496,11 @@ func (dluo *DirectLinkUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (dluo *DirectLinkUpdateOne) check() error {
+	if v, ok := dluo.mutation.PublicPath(); ok {
+		if err := directlink.PublicPathValidator(v); err != nil {
+			return &ValidationError{Name: "public_path", err: fmt.Errorf(`ent: validator failed for field "DirectLink.public_path": %w`, err)}
+		}
+	}
 	if _, ok := dluo.mutation.FileID(); dluo.mutation.FileCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DirectLink.file"`)
 	}
@@ -488,6 +544,12 @@ func (dluo *DirectLinkUpdateOne) sqlSave(ctx context.Context) (_node *DirectLink
 	}
 	if dluo.mutation.DeletedAtCleared() {
 		_spec.ClearField(directlink.FieldDeletedAt, field.TypeTime)
+	}
+	if value, ok := dluo.mutation.PublicPath(); ok {
+		_spec.SetField(directlink.FieldPublicPath, field.TypeString, value)
+	}
+	if dluo.mutation.PublicPathCleared() {
+		_spec.ClearField(directlink.FieldPublicPath, field.TypeString)
 	}
 	if value, ok := dluo.mutation.Name(); ok {
 		_spec.SetField(directlink.FieldName, field.TypeString, value)

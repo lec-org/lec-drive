@@ -96,6 +96,13 @@ func (f *File) DisplayName() string {
 	return f.Name()
 }
 
+func (f *File) URLName() string {
+	if f.Model.LecURLName != nil {
+		return *f.Model.LecURLName
+	}
+	return ""
+}
+
 func (f *File) CanHaveChildren() bool {
 	return f.Type() == types.FileTypeFolder && !f.IsSymbolic()
 }

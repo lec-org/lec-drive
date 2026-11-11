@@ -48,6 +48,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "public_path", Type: field.TypeString, Unique: true, Nullable: true, Size: 2048},
 		{Name: "name", Type: field.TypeString},
 		{Name: "downloads", Type: field.TypeInt},
 		{Name: "speed", Type: field.TypeInt},
@@ -61,7 +62,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "direct_links_files_direct_links",
-				Columns:    []*schema.Column{DirectLinksColumns[7]},
+				Columns:    []*schema.Column{DirectLinksColumns[8]},
 				RefColumns: []*schema.Column{FilesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -105,6 +106,7 @@ var (
 	// FilesColumns holds the columns for the "files" table.
 	FilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "lec_url_name", Type: field.TypeString, Nullable: true, Size: 64},
 		{Name: "lec_deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
@@ -126,43 +128,48 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "files_files_children",
-				Columns:    []*schema.Column{FilesColumns[10]},
+				Columns:    []*schema.Column{FilesColumns[11]},
 				RefColumns: []*schema.Column{FilesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "files_storage_policies_files",
-				Columns:    []*schema.Column{FilesColumns[11]},
+				Columns:    []*schema.Column{FilesColumns[12]},
 				RefColumns: []*schema.Column{StoragePoliciesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "files_users_files",
-				Columns:    []*schema.Column{FilesColumns[12]},
+				Columns:    []*schema.Column{FilesColumns[13]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "file_owner_id_file_children_lec_url_name",
+				Unique:  true,
+				Columns: []*schema.Column{FilesColumns[13], FilesColumns[11], FilesColumns[1]},
+			},
+			{
 				Name:    "file_file_children_name",
 				Unique:  true,
-				Columns: []*schema.Column{FilesColumns[10], FilesColumns[5]},
+				Columns: []*schema.Column{FilesColumns[11], FilesColumns[6]},
 			},
 			{
 				Name:    "file_file_children_type_updated_at",
 				Unique:  false,
-				Columns: []*schema.Column{FilesColumns[10], FilesColumns[4], FilesColumns[3]},
+				Columns: []*schema.Column{FilesColumns[11], FilesColumns[5], FilesColumns[4]},
 			},
 			{
 				Name:    "file_file_children_type_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{FilesColumns[10], FilesColumns[4], FilesColumns[2]},
+				Columns: []*schema.Column{FilesColumns[11], FilesColumns[5], FilesColumns[3]},
 			},
 			{
 				Name:    "file_file_children_type_size",
 				Unique:  false,
-				Columns: []*schema.Column{FilesColumns[10], FilesColumns[4], FilesColumns[6]},
+				Columns: []*schema.Column{FilesColumns[11], FilesColumns[5], FilesColumns[7]},
 			},
 		},
 	}

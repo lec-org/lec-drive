@@ -105,7 +105,9 @@ export default defineConfig({
     proxy: {
       "/api": backendProxyOption,
       "/s/": backendProxyOption,
-      "/f/": backendProxyOption,
+      // 英文目录图片走后端，保留 Vite 源码和应用页面的处理。
+      "^/(?!src/|node_modules/|@|assets/|static/|locales/|session/|home/|callback/|profile/|settings/|tasks/|downloads/|shares/|connect/|admin/|dav/|f/|s/|api/)[A-Za-z0-9_]+/.+":
+        backendProxyOption,
       "/manifest.json": backendProxyOption,
     },
   },

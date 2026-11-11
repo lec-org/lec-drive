@@ -68,7 +68,7 @@ func Test团队成员权限与三十天直链保留(t *testing.T) {
 	require.NoError(t, err)
 	image, err = db.File.UpdateOne(image).SetPrimaryEntity(entity.ID).SetSize(10).Save(ctx)
 	require.NoError(t, err)
-	link, err := db.DirectLink.Create().SetName("photo.png").SetFile(image).SetDownloads(0).SetSpeed(0).Save(ctx)
+	link, err := inventory.EnsureReadableLink(ctx, db, image, 0)
 	require.NoError(t, err)
 	loadLink := func(target *ent.DirectLink) *ent.DirectLink {
 		c := context.WithValue(ctx, inventory.LoadDirectLinkFile{}, true)
@@ -101,6 +101,10 @@ func Test团队成员权限与三十天直链保留(t *testing.T) {
 	deleted, err := db.File.Get(ctx, image.ID)
 	require.NoError(t, err)
 	require.NotNil(t, deleted.LecDeletedAt)
+	before := db.File.Query().CountX(ctx)
+	_, err = memberFS.Create(ctx, path, types.FileTypeFile)
+	require.Error(t, err, "回收保留期内不能复用原图片路径")
+	require.Equal(t, before, db.File.Query().CountX(ctx), "冲突上传不能留下占位文件")
 	deadline, err := inventory.TrashDeadline(deleted)
 	require.NoError(t, err)
 	require.WithinDuration(t, deleted.LecDeletedAt.Add(30*24*time.Hour), deadline, time.Second)
@@ -123,7 +127,7 @@ func Test团队成员权限与三十天直链保留(t *testing.T) {
 	child, err := db.File.Create().SetName("child.png").SetOwnerID(owner.ID).SetType(int(types.FileTypeFile)).
 		SetParentID(folder.ID()).SetPrimaryEntity(entity.ID).AddEntities(entity).Save(ctx)
 	require.NoError(t, err)
-	childLink, err := db.DirectLink.Create().SetName("child.png").SetFile(child).SetDownloads(0).SetSpeed(0).Save(ctx)
+	childLink, err := inventory.EnsureReadableLink(ctx, db, child, 0)
 	require.NoError(t, err)
 	adminFS = NewFileManager(dep, admin).(*manager)
 	require.NoError(t, adminFS.Delete(ctx, []*fs.URI{uri("cloudreve://my/folder")}))

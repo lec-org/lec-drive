@@ -24,6 +24,8 @@ type DirectLink struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// PublicPath holds the value of the "public_path" field.
+	PublicPath *string `json:"public_path,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Downloads holds the value of the "downloads" field.
@@ -67,7 +69,7 @@ func (*DirectLink) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case directlink.FieldID, directlink.FieldDownloads, directlink.FieldFileID, directlink.FieldSpeed:
 			values[i] = new(sql.NullInt64)
-		case directlink.FieldName:
+		case directlink.FieldPublicPath, directlink.FieldName:
 			values[i] = new(sql.NullString)
 		case directlink.FieldCreatedAt, directlink.FieldUpdatedAt, directlink.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -110,6 +112,13 @@ func (dl *DirectLink) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dl.DeletedAt = new(time.Time)
 				*dl.DeletedAt = value.Time
+			}
+		case directlink.FieldPublicPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field public_path", values[i])
+			} else if value.Valid {
+				dl.PublicPath = new(string)
+				*dl.PublicPath = value.String
 			}
 		case directlink.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -185,6 +194,11 @@ func (dl *DirectLink) String() string {
 	if v := dl.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := dl.PublicPath; v != nil {
+		builder.WriteString("public_path=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")

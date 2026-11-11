@@ -114,6 +114,7 @@ type (
 	}
 
 	CreateFolderParameters struct {
+		URLName             string
 		Owner               int
 		Name                string
 		IsSymbolic          bool
@@ -618,6 +619,7 @@ func (f *fileClient) Copy(ctx context.Context, args *CopyParameter) (map[int][]*
 
 		stm := f.client.File.Create().
 			SetName(file.Name).
+			SetNillableLecURLName(file.LecURLName).
 			SetOwnerID(dstMap[file.FileChildren][0].OwnerID).
 			SetSize(file.Size).
 			SetType(file.Type).
@@ -817,6 +819,15 @@ func (f *fileClient) CreateFile(ctx context.Context, root *ent.File, args *Creat
 	newFile, err := stm.Save(ctx)
 	if err != nil {
 		return nil, nil, nil, fmt.Errorf("failed to create file: %v", err)
+	}
+	owner, err := f.client.User.Get(ctx, root.OwnerID)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if IsLecTeamMember(owner) && args.FileType == types.FileTypeFile {
+		if _, err := EnsureReadableLink(ctx, f.client, newFile, 0); err != nil {
+			return nil, nil, nil, err
+		}
 	}
 
 	// Create default primary file entity if needed
@@ -1074,6 +1085,14 @@ func (f *fileClient) CreateFolder(ctx context.Context, root *ent.File, args *Cre
 		SetName(args.Name)
 	if root != nil {
 		stm.SetParent(root).SetType(int(types.FileTypeFolder))
+		name := args.URLName
+		if name == "" {
+			name = args.Name
+		}
+		if err := ValidateFolderURLName(name, root.FileChildren == 0 && root.Name == RootFolderName); err != nil {
+			return nil, err
+		}
+		stm.SetLecURLName(name)
 	}
 
 	fid, err := stm.OnConflict(sql.ConflictColumns(file.FieldFileChildren, file.FieldName)).Ignore().ID(ctx)

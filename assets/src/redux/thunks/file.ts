@@ -1088,7 +1088,12 @@ export function createNew(index: number, type: string, viewer?: Viewer, template
   };
 }
 
-export function submitCreateNew(index: number, name: string, type: number): AppThunk<Promise<FileResponse>> {
+export function submitCreateNew(
+  index: number,
+  name: string,
+  type: number,
+  urlName?: string,
+): AppThunk<Promise<FileResponse>> {
   return async (dispatch, getState): Promise<FileResponse> => {
     const fm = getState().fileManager[index];
     const uri = fm.pure_path;
@@ -1103,6 +1108,7 @@ export function submitCreateNew(index: number, name: string, type: number): AppT
         type: type == FileType.file ? "file" : "folder",
         uri: crUri.join(name).toString(),
         err_on_conflict: true,
+        url_name: urlName,
       }),
     );
 

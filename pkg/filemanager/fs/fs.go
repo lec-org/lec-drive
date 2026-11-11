@@ -145,6 +145,7 @@ type (
 		ID() int
 		Name() string
 		DisplayName() string
+		URLName() string
 		Ext() string
 		Type() types.FileType
 		Size() int64
@@ -305,6 +306,7 @@ type (
 
 	// FsOption options for underlying file system.
 	FsOption struct {
+		FolderURLName      string
 		Page               int // Page number when listing files.
 		PageSize           int // Size of pages when listing files.
 		OrderBy            string
@@ -573,6 +575,10 @@ func WithMetadata(m map[string]string) Option {
 	return OptionFunc(func(o *FsOption) {
 		o.Metadata = m
 	})
+}
+
+func WithFolderURLName(name string) Option {
+	return OptionFunc(func(o *FsOption) { o.FolderURLName = name })
 }
 
 // WithArchiveCompression sets whether to compress files in archive.

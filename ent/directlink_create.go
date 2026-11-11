@@ -65,6 +65,20 @@ func (dlc *DirectLinkCreate) SetNillableDeletedAt(t *time.Time) *DirectLinkCreat
 	return dlc
 }
 
+// SetPublicPath sets the "public_path" field.
+func (dlc *DirectLinkCreate) SetPublicPath(s string) *DirectLinkCreate {
+	dlc.mutation.SetPublicPath(s)
+	return dlc
+}
+
+// SetNillablePublicPath sets the "public_path" field if the given value is not nil.
+func (dlc *DirectLinkCreate) SetNillablePublicPath(s *string) *DirectLinkCreate {
+	if s != nil {
+		dlc.SetPublicPath(*s)
+	}
+	return dlc
+}
+
 // SetName sets the "name" field.
 func (dlc *DirectLinkCreate) SetName(s string) *DirectLinkCreate {
 	dlc.mutation.SetName(s)
@@ -156,6 +170,11 @@ func (dlc *DirectLinkCreate) check() error {
 	if _, ok := dlc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DirectLink.updated_at"`)}
 	}
+	if v, ok := dlc.mutation.PublicPath(); ok {
+		if err := directlink.PublicPathValidator(v); err != nil {
+			return &ValidationError{Name: "public_path", err: fmt.Errorf(`ent: validator failed for field "DirectLink.public_path": %w`, err)}
+		}
+	}
 	if _, ok := dlc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "DirectLink.name"`)}
 	}
@@ -216,6 +235,10 @@ func (dlc *DirectLinkCreate) createSpec() (*DirectLink, *sqlgraph.CreateSpec) {
 	if value, ok := dlc.mutation.DeletedAt(); ok {
 		_spec.SetField(directlink.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
+	}
+	if value, ok := dlc.mutation.PublicPath(); ok {
+		_spec.SetField(directlink.FieldPublicPath, field.TypeString, value)
+		_node.PublicPath = &value
 	}
 	if value, ok := dlc.mutation.Name(); ok {
 		_spec.SetField(directlink.FieldName, field.TypeString, value)
@@ -325,6 +348,24 @@ func (u *DirectLinkUpsert) UpdateDeletedAt() *DirectLinkUpsert {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (u *DirectLinkUpsert) ClearDeletedAt() *DirectLinkUpsert {
 	u.SetNull(directlink.FieldDeletedAt)
+	return u
+}
+
+// SetPublicPath sets the "public_path" field.
+func (u *DirectLinkUpsert) SetPublicPath(v string) *DirectLinkUpsert {
+	u.Set(directlink.FieldPublicPath, v)
+	return u
+}
+
+// UpdatePublicPath sets the "public_path" field to the value that was provided on create.
+func (u *DirectLinkUpsert) UpdatePublicPath() *DirectLinkUpsert {
+	u.SetExcluded(directlink.FieldPublicPath)
+	return u
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (u *DirectLinkUpsert) ClearPublicPath() *DirectLinkUpsert {
+	u.SetNull(directlink.FieldPublicPath)
 	return u
 }
 
@@ -465,6 +506,27 @@ func (u *DirectLinkUpsertOne) UpdateDeletedAt() *DirectLinkUpsertOne {
 func (u *DirectLinkUpsertOne) ClearDeletedAt() *DirectLinkUpsertOne {
 	return u.Update(func(s *DirectLinkUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetPublicPath sets the "public_path" field.
+func (u *DirectLinkUpsertOne) SetPublicPath(v string) *DirectLinkUpsertOne {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.SetPublicPath(v)
+	})
+}
+
+// UpdatePublicPath sets the "public_path" field to the value that was provided on create.
+func (u *DirectLinkUpsertOne) UpdatePublicPath() *DirectLinkUpsertOne {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.UpdatePublicPath()
+	})
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (u *DirectLinkUpsertOne) ClearPublicPath() *DirectLinkUpsertOne {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.ClearPublicPath()
 	})
 }
 
@@ -786,6 +848,27 @@ func (u *DirectLinkUpsertBulk) UpdateDeletedAt() *DirectLinkUpsertBulk {
 func (u *DirectLinkUpsertBulk) ClearDeletedAt() *DirectLinkUpsertBulk {
 	return u.Update(func(s *DirectLinkUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetPublicPath sets the "public_path" field.
+func (u *DirectLinkUpsertBulk) SetPublicPath(v string) *DirectLinkUpsertBulk {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.SetPublicPath(v)
+	})
+}
+
+// UpdatePublicPath sets the "public_path" field to the value that was provided on create.
+func (u *DirectLinkUpsertBulk) UpdatePublicPath() *DirectLinkUpsertBulk {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.UpdatePublicPath()
+	})
+}
+
+// ClearPublicPath clears the value of the "public_path" field.
+func (u *DirectLinkUpsertBulk) ClearPublicPath() *DirectLinkUpsertBulk {
+	return u.Update(func(s *DirectLinkUpsert) {
+		s.ClearPublicPath()
 	})
 }
 
