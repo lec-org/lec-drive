@@ -1,0 +1,11 @@
+.git
+.build
+**/node_modules
+assets/build
+assets/dist
+data
+conf.ini
+*.log
+lec-drive
+cloudreve
+application/statics/assets.zip
