@@ -22,7 +22,7 @@ COPY --from=frontend /source/assets/build ./assets/build
 # Go embed 只打包本次前端构建，避免旧文件留在归档中。
 RUN rm -f application/statics/assets.zip \
     && zip -qr application/statics/assets.zip assets/build \
-    && go test ./pkg/lecsso ./middleware \
+    && go test ./pkg/lecsso ./middleware ./service/explorer \
     && go build -p 3 -trimpath -o /out/lec-drive \
        -ldflags "-s -w -X github.com/cloudreve/Cloudreve/v4/application/constants.BackendVersion=4.19.1+lec.2" .
 

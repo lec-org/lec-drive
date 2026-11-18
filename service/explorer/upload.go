@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/cloudreve/Cloudreve/v4/application/dependency"
+	"github.com/cloudreve/Cloudreve/v4/ent"
 	"github.com/cloudreve/Cloudreve/v4/inventory"
 	"github.com/cloudreve/Cloudreve/v4/inventory/types"
 	"github.com/cloudreve/Cloudreve/v4/pkg/cluster"
@@ -118,7 +119,7 @@ func (service *UploadService) LocalUpload(c *gin.Context) error {
 	m := manager.NewFileManager(dep, user)
 	defer m.Recycle()
 
-	if uploadSession.UID != user.ID {
+	if !ownsUploadSession(user, &uploadSession) {
 		return serializer.NewError(serializer.CodeUploadSessionExpired, "", nil)
 	}
 
@@ -129,6 +130,18 @@ func (service *UploadService) LocalUpload(c *gin.Context) error {
 	}
 
 	return processChunkUpload(c, m, &uploadSession, service.Index, placeholder, fs.ModeOverwrite)
+}
+
+// 上传会话归文件空间所有者；团队成员的登录身份仍用于审计，不能用来匹配资产账号。
+func ownsUploadSession(user *ent.User, session *fs.UploadSession) bool {
+	if user == nil || session == nil {
+		return false
+	}
+	ownerID := user.ID
+	if user.LecTeamOwnerID != nil {
+		ownerID = *user.LecTeamOwnerID
+	}
+	return ownerID == session.UID
 }
 
 // SlaveUpload 处理从机文件分片上传
